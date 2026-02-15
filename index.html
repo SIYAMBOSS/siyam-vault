@@ -30,7 +30,9 @@
 
             <h2 id="auth-title" class="text-3xl font-black mb-6 text-blue-500 italic uppercase">Login</h2>
             <div class="space-y-4 text-left">
-                <div id="reg-fields" class="hidden"><input type="text" id="user-name" placeholder="Name" class="auth-input"></div>
+                <div id="reg-fields" class="hidden">
+                    <input type="text" id="user-name" placeholder="Name" class="auth-input">
+                </div>
                 <input type="email" id="user-email" placeholder="Gmail Address" class="auth-input">
                 <input type="password" id="pin-1" placeholder="Security PIN" class="auth-input">
                 <button onclick="handleAuth()" class="w-full primary-btn p-4 rounded-2xl font-black mt-4 active:scale-95 transition-all uppercase">Continue</button>
@@ -51,10 +53,10 @@
             </nav>
 
             <div id="upload-progress-container" class="hidden w-full max-w-5xl mx-auto px-4 mt-6">
-                <div class="w-full bg-zinc-900 h-1.5 rounded-full overflow-hidden border border-zinc-800">
+                <div class="w-full bg-zinc-900 h-1 rounded-full overflow-hidden border border-zinc-800">
                     <div id="upload-bar" class="bg-blue-500 h-full w-0 transition-all duration-300"></div>
                 </div>
-                <p id="upload-status-text" class="text-[8px] text-blue-500 font-black uppercase mt-2 text-center animate-pulse">Uploading...</p>
+                <p id="upload-status-text" class="text-[8px] text-blue-500 font-black uppercase mt-2 text-center animate-pulse tracking-widest">Uploading...</p>
             </div>
         </header>
 
@@ -68,23 +70,21 @@
     </main>
 
     <div id="preview-modal" class="hidden fixed inset-0 z-[500] flex items-center justify-center bg-black/98 p-2">
-        <button onclick="closePreview()" class="absolute top-6 right-6 w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-white text-xl z-[510]"><i class="fa-solid fa-xmark"></i></button>
-        <button id="download-btn" class="absolute bottom-10 left-1/2 -translate-x-1/2 px-8 py-4 bg-blue-600 rounded-2xl flex items-center gap-3 text-white font-black uppercase tracking-widest shadow-2xl active:scale-95 transition-all z-[510]">
-            <i class="fa-solid fa-download"></i> Save to Gallery
+        <button onclick="closePreview()" class="absolute top-6 right-6 w-10 h-10 bg-white/10 rounded-full text-white text-xl z-[510]"><i class="fa-solid fa-xmark"></i></button>
+        <button id="download-btn" class="absolute bottom-10 left-1/2 -translate-x-1/2 px-8 py-4 bg-blue-600 rounded-2xl flex items-center gap-3 text-white font-black uppercase tracking-widest z-[510]">
+            <i class="fa-solid fa-download"></i> Save
         </button>
-        <div id="preview-content-box" class="max-w-full max-h-[80%] flex items-center justify-center animate-fade-in"></div>
+        <div id="preview-content-box" class="w-full max-h-[80%] flex items-center justify-center"></div>
     </div>
 
     <div id="delete-modal" class="hidden fixed inset-0 z-[600] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
-        <div class="bg-[#0c0c0c] border border-zinc-800 p-8 rounded-[2rem] w-full max-w-xs text-center shadow-2xl animate-fade-in">
-            <div class="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i class="fa-solid fa-trash-can text-2xl"></i>
-            </div>
-            <h3 class="text-xl font-black mb-2 uppercase italic text-white">Delete?</h3>
-            <p class="text-zinc-500 text-[10px] mb-8">This file will be removed permanently.</p>
-            <div class="flex gap-3">
-                <button onclick="closeDeleteModal()" class="flex-1 py-4 rounded-2xl bg-zinc-900 text-white font-bold text-[10px] uppercase transition-all">Cancel</button>
-                <button id="confirm-delete-btn" class="flex-1 py-4 rounded-2xl bg-red-600 text-white font-bold text-[10px] uppercase shadow-lg shadow-red-600/20">Delete</button>
+        <div class="bg-[#0c0c0c] border border-zinc-800 p-8 rounded-[2rem] w-full max-w-xs text-center animate-fade-in">
+            <i class="fa-solid fa-trash-can text-red-500 text-3xl mb-4"></i>
+            <h3 class="text-white font-black mb-2 italic">DELETE FILE?</h3>
+            <p class="text-zinc-500 text-[10px] mb-8">This action cannot be undone.</p>
+            <div class="flex gap-2">
+                <button onclick="closeDeleteModal()" class="flex-1 py-4 rounded-2xl bg-zinc-900 text-zinc-400 font-bold text-[10px] uppercase">Cancel</button>
+                <button id="confirm-delete-btn" class="flex-1 py-4 rounded-2xl bg-red-600 text-white font-bold text-[10px] uppercase">Delete</button>
             </div>
         </div>
     </div>
