@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>SIYAMBOSS | ULTIMATE VAULT</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+</head>
+<body class="bg-[#050505] text-white font-sans selection:bg-blue-500/30 overflow-x-hidden">
+
+    <div id="token-modal" class="fixed inset-0 z-[300] flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 hidden">
+        <div class="glass-card p-8 rounded-[2.5rem] w-full max-w-sm text-center border border-blue-500/20 shadow-2xl shadow-blue-500/5">
+            <div class="w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-blue-500/20">
+                <i class="fa-solid fa-shield-halved text-blue-500 text-3xl"></i>
+            </div>
+            <h3 class="text-2xl font-black mb-2 italic">ACCESS KEY</h3>
+            <p class="text-zinc-500 text-[10px] mb-8 uppercase tracking-[3px] font-bold">Verify your identity</p>
+            <input type="password" id="token-input" placeholder="Paste GitHub Token" class="auth-input mb-6 text-center tracking-widest border-zinc-800">
+            <button onclick="saveToken()" class="w-full primary-btn p-4 rounded-2xl font-black uppercase active:scale-95 transition-all shadow-lg shadow-blue-600/20 tracking-widest">Unlock Vault</button>
+        </div>
+    </div>
+
+    <section id="auth-section" class="flex items-center justify-center min-h-screen p-4 hidden">
+        <div class="glass-card p-8 rounded-[2.5rem] w-full max-w-sm text-center border border-zinc-800 shadow-2xl">
+            <div class="swiper mySwiper mb-8 rounded-3xl overflow-hidden border border-zinc-800">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide"><img src="https://i.ibb.co/XfqmXyH/1000045022.jpg" class="slider-img"></div>
+                    <div class="swiper-slide"><img src="https://i.ibb.co/0YmX4QZ/1000045011.jpg" class="slider-img"></div>
+                    <div class="swiper-slide"><img src="https://i.ibb.co/9vFzXqH/1000045005.jpg" class="slider-img"></div>
+                    <div class="swiper-slide"><img src="https://i.ibb.co/mS7Nq4g/1000044972.jpg" class="slider-img"></div>
+                </div>
+                <div class="swiper-pagination"></div>
+            </div>
+            <h2 id="auth-title" class="text-3xl font-black mb-6 text-blue-500 italic tracking-tighter uppercase">Login</h2>
+            <div class="space-y-4 text-left">
+                <div id="reg-fields" class="hidden"><input type="text" id="user-name" placeholder="Full Name" class="auth-input"></div>
+                <input type="email" id="user-email" placeholder="Gmail Address" class="auth-input">
+                <input type="password" id="pin-1" placeholder="Security PIN" class="auth-input">
+                <button onclick="handleAuth()" class="w-full primary-btn p-4 rounded-2xl font-black mt-4 active:scale-95 transition-all uppercase tracking-widest">Continue</button>
+            </div>
+            <p id="toggle-text" class="mt-8 text-xs text-zinc-500 cursor-pointer" onclick="toggleAuth()">No account? <span class="text-blue-500 font-bold">Create Account</span></p>
+        </div>
+    </section>
+
+    <main id="dashboard" class="hidden min-h-screen pb-24">
+        <header class="p-6 sticky top-0 bg-[#050505]/90 backdrop-blur-xl border-b border-zinc-900 z-50">
+            <div class="flex justify-between items-center max-w-5xl mx-auto">
+                <h1 class="text-2xl font-black italic">SIYAM<span class="text-blue-500">BOSS</span></h1>
+                <button onclick="logout()" class="px-4 py-2 rounded-xl text-red-500 bg-red-500/10 border border-red-500/20 text-[10px] font-bold tracking-widest">LOGOUT</button>
+            </div>
+            <nav class="flex justify-center mt-8 gap-8">
+                <button onclick="switchTab('photos')" id="tab-photos" class="nav-tab active">Photos</button>
+                <button onclick="switchTab('videos')" id="tab-videos" class="nav-tab">Videos</button>
+                <button onclick="switchTab('albums')" id="tab-albums" class="nav-tab">Albums</button>
+            </nav>
+        </header>
+
+        <div id="loader" class="hidden fixed inset-0 flex items-center justify-center bg-black/80 z-[100]"><div class="loader-circle"></div></div>
+        <div id="photos-content" class="grid grid-cols-3 gap-0.5 max-w-5xl mx-auto pt-0.5 animate-fade-in"></div>
+        <div id="videos-content" class="hidden grid grid-cols-2 gap-2 p-2 max-w-5xl mx-auto animate-fade-in"></div>
+        <div id="albums-content" class="hidden p-4 text-center text-zinc-600 mt-20">No Albums Created</div>
+
+        <label for="file-upload" class="fixed bottom-8 right-8 w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center shadow-2xl cursor-pointer z-[60] active:scale-90 transition-all shadow-blue-500/20">
+            <i class="fa-solid fa-plus text-white text-3xl"></i>
+        </label>
+        <input type="file" id="file-upload" class="hidden" accept="image/*,video/*" onchange="uploadFile(event)">
+    </main>
+
+    <div id="delete-modal" class="hidden fixed inset-0 z-[200] flex items-center justify-center bg-black/90 p-4">
+        <div class="glass-card p-8 rounded-3xl w-full max-w-xs text-center border border-red-500/20 shadow-2xl">
+            <h3 class="text-xl font-bold mb-8">মুছে ফেলতে চান?</h3>
+            <div class="flex gap-4">
+                <button onclick="closeDeleteModal()" class="flex-1 p-3 rounded-xl bg-zinc-800 font-bold">Cancel</button>
+                <button id="confirm-delete-btn" class="flex-1 p-3 rounded-xl bg-red-600 font-bold">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+  </html>
