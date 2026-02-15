@@ -3,37 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIYAMBOSS | PREMIUM VAULT</title>
+    <title>SIYAMBOSS | PRO VAULT</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 </head>
 <body class="bg-[#050505] text-white font-sans selection:bg-blue-500/30">
 
-    <div id="token-modal" class="fixed inset-0 z-[300] flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 hidden">
-        <div class="glass-card p-8 rounded-[2.5rem] w-full max-w-sm text-center border border-blue-500/30 shadow-2xl">
-            <div class="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-blue-500/20">
-                <i class="fa-solid fa-key text-blue-500 text-2xl"></i>
-            </div>
-            <h3 class="text-2xl font-black mb-2 italic uppercase">SIYAM<span class="text-blue-500">VAULT</span></h3>
-            <p class="text-zinc-500 text-[10px] mb-8 uppercase tracking-widest font-bold">GitHub Access Token দিন</p>
-            <input type="password" id="token-input" placeholder="ghp_xxxxxxxxxxxx" class="auth-input mb-6 text-center tracking-widest">
-            <button onclick="saveToken()" class="w-full primary-btn p-4 rounded-2xl font-black uppercase active:scale-95 transition-all shadow-lg shadow-blue-600/20">Verify & Unlock</button>
-        </div>
-    </div>
-
-    <section id="auth-section" class="flex items-center justify-center min-h-screen p-4 hidden">
+    <section id="auth-section" class="flex items-center justify-center min-h-screen p-4">
         <div class="glass-card p-8 rounded-[2.5rem] w-full max-w-sm text-center border border-zinc-800 shadow-2xl">
-            <div class="swiper mySwiper mb-8 rounded-3xl overflow-hidden border border-zinc-800">
-                <div class="swiper-wrapper">
-                    <div class="swiper-slide"><img src="https://i.ibb.co/XfqmXyH/1000045022.jpg" class="slider-img"></div>
-                    <div class="swiper-slide"><img src="https://i.ibb.co/0YmX4QZ/1000045011.jpg" class="slider-img"></div>
-                    <div class="swiper-slide"><img src="https://i.ibb.co/9vFzXqH/1000045005.jpg" class="slider-img"></div>
-                    <div class="swiper-slide"><img src="https://i.ibb.co/mS7Nq4g/1000044972.jpg" class="slider-img"></div>
+            
+            <div class="mb-6 rounded-3xl overflow-hidden border border-zinc-800 bg-zinc-900 relative">
+                <img src="" id="fixed-banner" class="w-full h-56 object-cover hidden">
+                <div id="banner-placeholder" class="w-full h-56 flex flex-col items-center justify-center text-zinc-700">
+                    <i class="fa-solid fa-image text-5xl mb-2"></i>
+                    <p class="text-[10px] uppercase font-bold">No Banner Set</p>
                 </div>
-                <div class="swiper-pagination"></div>
             </div>
+
+            <div id="admin-setup-area" class="mb-6">
+                <input type="file" id="banner-upload" class="hidden" accept="image/*" onchange="setupBanner(event)">
+                <label for="banner-upload" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest cursor-pointer transition-all inline-block shadow-lg">
+                    <i class="fa-solid fa-plus mr-2"></i> Set Permanent Banner
+                </label>
+            </div>
+
             <h2 id="auth-title" class="text-3xl font-black mb-6 text-blue-500 italic uppercase">Login</h2>
             <div class="space-y-4 text-left">
                 <div id="reg-fields" class="hidden"><input type="text" id="user-name" placeholder="আপনার নাম" class="auth-input"></div>
@@ -58,45 +52,31 @@
 
             <div id="upload-progress-container" class="hidden w-full max-w-5xl mx-auto px-4 mt-6">
                 <div class="w-full bg-zinc-900 h-1.5 rounded-full overflow-hidden border border-zinc-800">
-                    <div id="upload-bar" class="bg-blue-500 h-full w-0 transition-all duration-300 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
+                    <div id="upload-bar" class="bg-blue-500 h-full w-0 transition-all duration-300 shadow-[0_0_10px_#3b82f6]"></div>
                 </div>
-                <p id="progress-text" class="text-[8px] text-blue-500 font-black uppercase mt-2 tracking-[0.2em] text-center animate-pulse">Uploading to Cloud...</p>
+                <p id="upload-status-text" class="text-[8px] text-blue-500 font-black uppercase mt-2 tracking-[0.2em] text-center animate-pulse">Uploading...</p>
             </div>
         </header>
 
-        <div id="loader" class="hidden fixed inset-0 flex items-center justify-center bg-black/80 z-[100]"><div class="loader-circle"></div></div>
-        
         <div id="photos-content" class="grid grid-cols-3 gap-0.5 max-w-5xl mx-auto pt-0.5 animate-fade-in"></div>
         <div id="videos-content" class="hidden grid grid-cols-2 gap-2 p-2 max-w-5xl mx-auto animate-fade-in"></div>
 
-        <label for="file-upload" class="fixed bottom-8 right-8 w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center shadow-2xl cursor-pointer z-[60] active:scale-90 transition-all border border-blue-400/20">
+        <label for="file-upload" class="fixed bottom-8 right-8 w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center shadow-2xl cursor-pointer z-[60] active:scale-90 transition-all">
             <i class="fa-solid fa-cloud-arrow-up text-white text-2xl"></i>
         </label>
         <input type="file" id="file-upload" class="hidden" accept="image/*,video/*" multiple onchange="uploadFiles(event)">
     </main>
 
     <div id="preview-modal" class="hidden fixed inset-0 z-[500] flex items-center justify-center bg-black/98 p-2">
-        <button onclick="closePreview()" class="absolute top-6 right-6 w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-white text-xl z-[510] active:scale-90 transition-all border border-white/10"><i class="fa-solid fa-xmark"></i></button>
+        <button onclick="closePreview()" class="absolute top-6 right-6 w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-white text-xl z-[510]"><i class="fa-solid fa-xmark"></i></button>
         
-        <a id="download-btn" href="" download class="absolute bottom-10 left-1/2 -translate-x-1/2 px-8 py-4 bg-blue-600 rounded-2xl flex items-center gap-3 text-white font-black uppercase tracking-widest shadow-2xl active:scale-95 transition-all z-[510] border border-blue-400/30">
+        <button id="download-btn" class="absolute bottom-10 left-1/2 -translate-x-1/2 px-8 py-4 bg-blue-600 rounded-2xl flex items-center gap-3 text-white font-black uppercase tracking-widest shadow-2xl active:scale-95 transition-all z-[510]">
             <i class="fa-solid fa-download"></i> Save to Gallery
-        </a>
+        </button>
 
-        <div id="preview-content-box" class="max-w-full max-h-[80%] flex items-center justify-center animate-fade-in">
-            </div>
+        <div id="preview-content-box" class="max-w-full max-h-[80%] flex items-center justify-center animate-fade-in"></div>
     </div>
 
-    <div id="delete-modal" class="hidden fixed inset-0 z-[200] flex items-center justify-center bg-black/90 p-4">
-        <div class="glass-card p-8 rounded-3xl w-full max-w-xs text-center border border-red-500/20">
-            <h3 class="text-xl font-bold mb-8">মুছে ফেলতে চান?</h3>
-            <div class="flex gap-4">
-                <button onclick="closeDeleteModal()" class="flex-1 p-3 rounded-xl bg-zinc-800 font-bold active:scale-95 transition-all">Cancel</button>
-                <button id="confirm-delete-btn" class="flex-1 p-3 rounded-xl bg-red-600 font-bold active:scale-95 transition-all">Delete</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="script.js"></script>
 </body>
-                    </html>
+</html>
