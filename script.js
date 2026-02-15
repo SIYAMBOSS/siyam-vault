@@ -1,5 +1,5 @@
-// configuration
-let GITHUB_TOKEN = localStorage.getItem('vault_token') || "ghp_YOUR_TOKEN_HERE"; 
+// --- CONFIGURATION ---
+let GITHUB_TOKEN = localStorage.getItem('vault_token') || "ghp_YOUR_TOKEN_HERE"; // আপনার টোকেন এখানে দিন
 const REPO_OWNER = "SIYAMBOSS";
 const REPO_NAME = "SIYAM-VAULT";
 
@@ -35,6 +35,7 @@ function setupBanner(event) {
     reader.onload = function(e) {
         localStorage.setItem('siyam_permanent_banner', e.target.result);
         checkBannerStatus();
+        alert("Banner set permanently!");
     };
     reader.readAsDataURL(file);
 }
@@ -48,13 +49,13 @@ async function requestWakeLock() {
     } catch (err) { console.log("WakeLock failed"); }
 }
 
-// ৩. আপলোড লজিক
+// ৩. আপলোড ও প্রগ্রেস বার
 async function uploadFiles(event) {
     const files = event.target.files;
     const email = localStorage.getItem('activeUser');
     if(!files.length || !email) return;
 
-    await requestWakeLock(); // ফোন যাতে ঘুমিয়ে না যায়
+    await requestWakeLock();
 
     const progressContainer = document.getElementById('upload-progress-container');
     const progressBar = document.getElementById('upload-bar');
@@ -82,7 +83,7 @@ async function uploadFiles(event) {
                         current++;
                         let percent = (current / total * 100);
                         progressBar.style.width = percent + "%";
-                        statusText.innerText = `Uploading: ${Math.round(percent)}% (Don't close)`;
+                        statusText.innerText = `Uploading: ${Math.round(percent)}% (Don't minimize)`;
                     }
                 } catch (err) { console.error(err); }
                 resolve();
@@ -101,7 +102,7 @@ async function uploadFiles(event) {
     }, 1500);
 }
 
-// ৪. গ্যালারি ও প্রিভিউ
+// ৪. গ্যালারি লোড
 async function loadContent(email, type) {
     const container = document.getElementById(`${type}-content`);
     const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/vault/${email}/${type}`, {
@@ -119,6 +120,7 @@ async function loadContent(email, type) {
     }
 }
 
+// ৫. ফিক্সড ডাউনলোড সিস্টেম (Blob Method)
 function openPreview(url, isVideo) {
     const modal = document.getElementById('preview-modal');
     const box = document.getElementById('preview-content-box');
@@ -131,21 +133,22 @@ function openPreview(url, isVideo) {
     document.body.style.overflow = 'hidden';
 }
 
-// ৫. ফিক্সড ডাউনলোড (Blob Method)
 async function downloadMedia(url) {
-    const response = await fetch(url);
-    const blob = await response.blob();
-    const blobUrl = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = blobUrl;
-    link.download = "SIYAM_VAULT_" + Date.now();
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(blobUrl);
+    try {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const blobUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = "SIYAM_VAULT_" + Date.now();
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(blobUrl);
+    } catch (e) { window.open(url, '_blank'); }
 }
 
-// বাকি ফাংশন
+// বাকি ইউটিলিটি
 function switchTab(tab) {
     const tabs = ['photos', 'videos'];
     tabs.forEach(t => {
@@ -169,6 +172,7 @@ function showDashboard() {
 function toggleAuth() {
     isRegistering = !isRegistering;
     document.getElementById('reg-fields').classList.toggle('hidden');
+    document.getElementById('auth-title').innerText = isRegistering ? "CREATE" : "LOGIN";
 }
 
 function closePreview() { document.getElementById('preview-modal').classList.add('hidden'); document.body.style.overflow = 'auto'; }
