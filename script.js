@@ -1,12 +1,13 @@
-// --- আপনার সঠিক টোকেন এখানে বসান ---
-const GITHUB_TOKEN = "ghp_xxxxxxxxxxxxxxxxxxxxxxx"; 
+// --- CONFIGURATION ---
+// আপনার সঠিক টোকেনটি এখানে বসান
+const GITHUB_TOKEN = "ghp_your_actual_token_here"; 
 const REPO_OWNER = "SIYAMBOSS";
 const REPO_NAME = "SIYAM-VAULT";
 
 let wakeLock = null;
 let fileToDelete = null;
 
-// পেজ লোড হলে চেক করা
+// পেজ লোড হলে কার্যক্রম শুরু
 window.onload = () => {
     checkBannerStatus();
     const activeUser = localStorage.getItem('activeUser');
@@ -15,84 +16,118 @@ window.onload = () => {
     }
 };
 
-// ১. ব্যানার স্ট্যাটাস চেক
+// ১. সবার জন্য পার্মানেন্ট ব্যানার লজিক (Fixed)
 async function checkBannerStatus() {
     const bannerImg = document.getElementById('fixed-banner');
     const placeholder = document.getElementById('banner-placeholder');
     const setupArea = document.getElementById('admin-setup-area');
-    const bannerUrl = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/permanent_banner.jpg`;
+    
+    // GitHub থেকে সরাসরি ছবি চেক (nocache ব্যবহার করে যাতে আপডেট সাথে সাথে দেখা যায়)
+    const bannerUrl = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/permanent_banner.jpg?v=${Date.now()}`;
     
     try {
         const res = await fetch(bannerUrl);
         if (res.ok) {
-            bannerImg.src = bannerUrl + "?v=" + Date.now();
+            bannerImg.src = bannerUrl;
             bannerImg.classList.remove('hidden');
             placeholder.classList.add('hidden');
-            setupArea.classList.add('hidden');
+            setupArea.classList.add('hidden'); // সবার জন্য বাটন গায়েব
         }
-    } catch (e) { console.log("Banner not found"); }
+    } catch (e) {
+        console.log("No permanent banner found.");
+    }
 }
 
-// ২. ব্যানার আপলোড করা
+// ২. ব্যানার আপলোড (SHA হ্যান্ডলিং সহ যাতে এরর না আসে)
 async function setupBanner(event) {
     const file = event.target.files[0];
-    if (!file) return;
+    if (!file || !GITHUB_TOKEN) return;
+
     const reader = new FileReader();
     reader.onload = async (e) => {
         const content = e.target.result.split(',')[1];
-        const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/permanent_banner.jpg`, {
-            method: 'PUT',
-            headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: "Update Banner", content: content })
-        });
-        if (res.ok) {
-            alert("Banner updated successfully!");
-            location.reload();
+        const path = "permanent_banner.jpg";
+        const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
+
+        try {
+            // আগে চেক করা ফাইলটি আছে কি না (SHA পেতে)
+            const checkFile = await fetch(url, {
+                headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+            });
+            let sha = null;
+            if (checkFile.ok) {
+                const data = await checkFile.json();
+                sha = data.sha;
+            }
+
+            const res = await fetch(url, {
+                method: 'PUT',
+                headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    message: "Update Permanent Banner", 
+                    content: content,
+                    sha: sha 
+                })
+            });
+
+            if (res.ok) {
+                alert("Banner Set Successfully!");
+                location.reload();
+            }
+        } catch (err) {
+            alert("Banner upload failed. Check Token.");
         }
     };
     reader.readAsDataURL(file);
 }
 
-// ৩. গ্যালারি লোড (Fix: SHA এবং Path হ্যান্ডলিং)
+// ৩. গ্যালারি লোড (Fast & No-Cache)
 async function loadContent(email, type) {
     const container = document.getElementById(`${type}-content`);
-    container.innerHTML = `<div class="col-span-3 py-10 text-center opacity-20"><i class="fa-solid fa-spinner fa-spin"></i></div>`;
+    container.innerHTML = `
+        <div class="col-span-3 py-20 text-center opacity-30">
+            <i class="fa-solid fa-spinner fa-spin text-2xl"></i>
+        </div>`;
 
+    const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/vault/${email}/${type}?nocache=${Date.now()}`;
+    
     try {
-        const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/vault/${email}/${type}`, {
-            headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Cache-Control': 'no-cache' }
+        const res = await fetch(url, {
+            headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }
         });
 
         if (res.ok) {
             const files = await res.json();
-            if(files.length === 0) {
-                container.innerHTML = `<p class="col-span-3 text-center py-20 text-zinc-700 text-[10px] font-bold">VAULT IS EMPTY</p>`;
+            if (files.length === 0) {
+                container.innerHTML = `<p class="col-span-3 text-center py-20 text-zinc-700 text-[10px] uppercase font-bold tracking-widest">Vault is empty</p>`;
                 return;
             }
 
             container.innerHTML = files.reverse().map(f => `
-                <div class="relative aspect-square overflow-hidden bg-zinc-900 border-[0.5px] border-zinc-800">
+                <div class="relative aspect-square overflow-hidden bg-zinc-900 border-[0.5px] border-zinc-800 animate-fade-in group">
                     <button class="delete-trigger" onclick="event.stopPropagation(); askDelete('${f.path}', '${f.sha}')">
-                        <i class="fa-solid fa-trash"></i>
+                        <i class="fa-solid fa-trash-can"></i>
                     </button>
                     ${type === 'videos' ? 
-                        `<video src="${f.download_url}" onclick="openPreview('${f.download_url}', true)"></video>` : 
+                        `<video src="${f.download_url}" onclick="openPreview('${f.download_url}', true)" preload="metadata"></video>` : 
                         `<img src="${f.download_url}" onclick="openPreview('${f.download_url}', false)" loading="lazy">`
                     }
                 </div>`).join('');
         } else {
-            container.innerHTML = `<p class="col-span-3 text-center py-20 text-red-500/20 text-[8px]">CONNECTION ERROR</p>`;
+            container.innerHTML = `<p class="col-span-3 text-center py-20 text-zinc-800 text-[8px]">NO DATA FOUND</p>`;
         }
-    } catch (e) { console.error(e); }
+    } catch (err) { console.error(err); }
 }
 
-// ৪. আপলোড লজিক (Background Support)
+// ৪. আপলোড লজিক (Background Mode Enabled)
 async function uploadFiles(event) {
     const files = event.target.files;
     const email = localStorage.getItem('activeUser');
     if (!files.length || !email) return;
 
-    if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen');
+    if ('wakeLock' in navigator) {
+        try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {}
+    }
 
     const progressContainer = document.getElementById('upload-progress-container');
     const progressBar = document.getElementById('upload-bar');
@@ -134,7 +169,7 @@ async function uploadFiles(event) {
     }, 1000);
 }
 
-// ৫. ডিলিট লজিক
+// ৫. ডিলিট সিস্টেম (Custom Popup)
 function askDelete(path, sha) {
     fileToDelete = { path, sha };
     document.getElementById('delete-modal').classList.remove('hidden');
@@ -143,7 +178,8 @@ function askDelete(path, sha) {
 async function executeDelete() {
     if (!fileToDelete) return;
     const btn = document.getElementById('confirm-delete-btn');
-    btn.innerText = "...";
+    const oldText = btn.innerText;
+    btn.innerText = "WAIT...";
     
     try {
         const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${fileToDelete.path}`, {
@@ -157,40 +193,40 @@ async function executeDelete() {
             const activeTab = document.getElementById('photos-content').classList.contains('hidden') ? 'videos' : 'photos';
             loadContent(localStorage.getItem('activeUser'), activeTab);
         }
-    } catch (e) { alert("Delete failed!"); }
-    btn.innerText = "Delete";
+    } catch (e) { alert("Delete error!"); }
+    btn.innerText = oldText;
 }
 
-// প্রিভিউ এবং ডাউনলোড
+// ৬. প্রিভিউ এবং ডাউনলোড (Blob Method)
 function openPreview(url, isVideo) {
     const box = document.getElementById('preview-content-box');
     document.getElementById('download-btn').onclick = () => downloadMedia(url);
-    box.innerHTML = isVideo ? `<video src="${url}" controls autoplay class="max-h-full"></video>` : `<img src="${url}" class="max-h-full">`;
+    box.innerHTML = isVideo ? `<video src="${url}" controls autoplay class="max-h-full rounded-lg"></video>` : `<img src="${url}" class="max-h-full rounded-lg shadow-2xl">`;
     document.getElementById('preview-modal').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
 }
 
 async function downloadMedia(url) {
-    const res = await fetch(url);
-    const blob = await res.blob();
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = "SIYAM_VAULT_" + Date.now();
-    link.click();
+    try {
+        const res = await fetch(url);
+        const blob = await res.blob();
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = "SIYAM_VAULT_" + Date.now();
+        link.click();
+    } catch (e) { window.open(url, '_blank'); }
 }
 
-// সুইচ ট্যাব
+// ইউটিলিটি ফাংশনস
 function switchTab(tab) {
-    const tabs = ['photos', 'videos'];
-    tabs.forEach(t => {
+    ['photos', 'videos'].forEach(t => {
         document.getElementById(`${t}-content`).classList.toggle('hidden', t !== tab);
         document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
     });
     const email = localStorage.getItem('activeUser');
-    if(email) loadContent(email, tab);
+    if (email) loadContent(email, tab);
 }
 
-// অথেনটিকেশন
 function handleAuth() {
     const email = document.getElementById('user-email').value;
     if (email) {
