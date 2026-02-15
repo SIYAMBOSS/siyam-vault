@@ -1,42 +1,80 @@
 <!DOCTYPE html>
-<html>
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIYAM VAULT</title>
+    <title>SIYAMBOSS | ULTIMATE VAULT</title>
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-black text-white">
+<body class="bg-[#050505] text-white font-sans selection:bg-blue-500/30">
 
-    <div id="auth-section" class="flex flex-col items-center justify-center min-h-screen p-6">
-        <h1 class="text-4xl font-bold mb-8 text-blue-500 italic">SIYAM VAULT</h1>
-        <div class="w-full max-w-xs space-y-4">
-            <input type="email" id="user-email" placeholder="Gmail" class="w-full p-4 bg-zinc-900 rounded-2xl outline-none border border-zinc-800 focus:border-blue-500">
-            <input type="password" id="github-token" placeholder="GitHub Token" class="w-full p-4 bg-zinc-900 rounded-2xl outline-none border border-zinc-800 focus:border-blue-500">
-            <button onclick="login()" class="w-full p-4 bg-blue-600 rounded-2xl font-bold uppercase">Enter</button>
+    <section id="auth-section" class="flex items-center justify-center min-h-screen p-4">
+        <div class="glass-card p-8 rounded-[2.5rem] w-full max-w-sm text-center border border-zinc-800 shadow-2xl">
+            
+            <div class="mb-6 rounded-3xl overflow-hidden border border-zinc-800 bg-zinc-900 relative">
+                <img src="" id="fixed-banner" class="w-full h-56 object-cover hidden">
+                <div id="banner-placeholder" class="w-full h-56 flex flex-col items-center justify-center text-zinc-700">
+                    <i class="fa-solid fa-image text-5xl mb-2"></i>
+                    <p class="text-[10px] uppercase font-bold">No Banner Set</p>
+                </div>
+            </div>
+
+            <div id="admin-setup-area" class="mb-6">
+                <input type="file" id="banner-upload" class="hidden" accept="image/*" onchange="setupBanner(event)">
+                <label for="banner-upload" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest cursor-pointer transition-all inline-block shadow-lg">
+                    <i class="fa-solid fa-plus mr-2"></i> Set Permanent Banner
+                </label>
+            </div>
+
+            <h2 id="auth-title" class="text-3xl font-black mb-6 text-blue-500 italic uppercase">Login</h2>
+            <div class="space-y-4 text-left">
+                <div id="reg-fields" class="hidden"><input type="text" id="user-name" placeholder="আপনার নাম" class="auth-input"></div>
+                <input type="email" id="user-email" placeholder="Gmail Address" class="auth-input">
+                <input type="password" id="pin-1" placeholder="Security PIN" class="auth-input">
+                <button onclick="handleAuth()" class="w-full primary-btn p-4 rounded-2xl font-black mt-4 active:scale-95 transition-all uppercase">Continue</button>
+            </div>
+            <p id="toggle-text" class="mt-8 text-xs text-zinc-500 cursor-pointer text-center" onclick="toggleAuth()">No account? <span class="text-blue-500 font-bold">Create Account</span></p>
         </div>
-    </div>
+    </section>
 
-    <div id="dashboard" class="hidden">
-        <header class="p-6 flex justify-between items-center border-b border-zinc-900 sticky top-0 bg-black/90 backdrop-blur-md z-50">
-            <h2 class="text-xl font-bold italic">SIYAM<span class="text-blue-500">BOSS</span></h2>
-            <button onclick="logout()" class="text-red-500 font-bold text-xs uppercase">Logout</button>
+    <main id="dashboard" class="hidden min-h-screen pb-24">
+        <header class="p-6 sticky top-0 bg-[#050505]/95 backdrop-blur-xl border-b border-zinc-900 z-50">
+            <div class="flex justify-between items-center max-w-5xl mx-auto">
+                <h1 class="text-2xl font-black italic">SIYAM<span class="text-blue-500">BOSS</span></h1>
+                <button onclick="logout()" class="px-4 py-2 rounded-xl text-red-500 bg-red-500/10 border border-red-500/20 text-[10px] font-bold">LOGOUT</button>
+            </div>
+            <nav class="flex justify-center mt-8 gap-10">
+                <button onclick="switchTab('photos')" id="tab-photos" class="nav-tab active">Photos</button>
+                <button onclick="switchTab('videos')" id="tab-videos" class="nav-tab">Videos</button>
+            </nav>
+
+            <div id="upload-progress-container" class="hidden w-full max-w-5xl mx-auto px-4 mt-6">
+                <div class="w-full bg-zinc-900 h-1.5 rounded-full overflow-hidden border border-zinc-800">
+                    <div id="upload-bar" class="bg-blue-500 h-full w-0 transition-all duration-300 shadow-[0_0_10px_#3b82f6]"></div>
+                </div>
+                <p class="text-[8px] text-blue-500 font-black uppercase mt-2 tracking-[0.2em] text-center animate-pulse">Uploading to Cloud...</p>
+            </div>
         </header>
 
-        <nav class="flex justify-center p-6 gap-8">
-            <button onclick="switchTab('photos')" id="tab-photos" class="text-blue-500 font-bold border-b-2 border-blue-500 pb-1">PHOTOS</button>
-            <button onclick="switchTab('videos')" id="tab-videos" class="text-zinc-500 font-bold pb-1">VIDEOS</button>
-        </nav>
+        <div id="photos-content" class="grid grid-cols-3 gap-0.5 max-w-5xl mx-auto pt-0.5 animate-fade-in"></div>
+        <div id="videos-content" class="hidden grid grid-cols-2 gap-2 p-2 max-w-5xl mx-auto animate-fade-in"></div>
 
-        <div id="photos-content" class="grid grid-cols-3 gap-1"></div>
-        <div id="videos-content" class="hidden grid grid-cols-2 gap-2 p-2"></div>
-
-        <label for="upload" class="fixed bottom-8 right-8 w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center shadow-xl cursor-pointer">
-            <i class="fa-solid fa-plus text-white text-2xl"></i>
+        <label for="file-upload" class="fixed bottom-8 right-8 w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center shadow-2xl cursor-pointer z-[60] active:scale-90 transition-all">
+            <i class="fa-solid fa-cloud-arrow-up text-white text-2xl"></i>
         </label>
-        <input type="file" id="upload" class="hidden" multiple onchange="uploadFiles(event)">
+        <input type="file" id="file-upload" class="hidden" accept="image/*,video/*" multiple onchange="uploadFiles(event)">
+    </main>
+
+    <div id="preview-modal" class="hidden fixed inset-0 z-[500] flex items-center justify-center bg-black/98 p-2">
+        <button onclick="closePreview()" class="absolute top-6 right-6 w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-white text-xl z-[510]"><i class="fa-solid fa-xmark"></i></button>
+        
+        <button id="download-btn" class="absolute bottom-10 left-1/2 -translate-x-1/2 px-8 py-4 bg-blue-600 rounded-2xl flex items-center gap-3 text-white font-black uppercase tracking-widest shadow-2xl active:scale-95 transition-all z-[510]">
+            <i class="fa-solid fa-download"></i> Save to Gallery
+        </button>
+
+        <div id="preview-content-box" class="max-w-full max-h-[80%] flex items-center justify-center animate-fade-in"></div>
     </div>
 
     <script src="script.js"></script>
