@@ -3,57 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIYAM VAULT PRO - V3</title>
+    <title>SIYAM VAULT ULTRA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-[#0b0b1a] text-white overflow-x-hidden">
+<body class="bg-[#0b0b1a] text-white overflow-hidden">
 
     <div class="fixed inset-0 z-0 bg-gradient-to-b from-[#0b0b1a] via-[#1a0b2e] to-[#050505]"><div id="stars"></div></div>
 
+    <div id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-[#0b0b1a]/95 backdrop-blur-3xl z-[600] border-r border-white/10 transform -translate-x-full transition-transform duration-500">
+        <div class="p-8">
+            <h3 class="text-2xl font-black italic text-purple-500 mb-10 live-text">VAULT MENU</h3>
+            <nav class="space-y-6">
+                <button onclick="switchTab('photos'); closeMenu()" class="menu-item"><i class="fa-solid fa-image"></i> ALL PHOTOS</button>
+                <button onclick="switchTab('favorites'); closeMenu()" class="menu-item"><i class="fa-solid fa-heart text-red-500"></i> FAVORITES</button>
+                <button onclick="startSlideshow(); closeMenu()" class="menu-item"><i class="fa-solid fa-play text-emerald-500"></i> SLIDE SHOW</button>
+                <button onclick="switchTab('trash'); closeMenu()" class="menu-item"><i class="fa-solid fa-trash text-orange-500"></i> TRASH BIN</button>
+                <div class="border-t border-white/5 my-6"></div>
+                <button onclick="logout()" class="menu-item text-red-400"><i class="fa-solid fa-power-off"></i> LOGOUT</button>
+            </nav>
+        </div>
+    </div>
+    <div id="sidebar-overlay" onclick="closeMenu()" class="hidden fixed inset-0 bg-black/60 z-[550] backdrop-blur-sm"></div>
+
     <div id="auth-box" class="relative z-50 flex items-center justify-center min-h-screen p-6">
         <div class="glass-card w-full max-w-sm p-10 rounded-[40px] border border-white/10 text-center shadow-2xl">
-            <h1 class="text-4xl font-black mb-1 italic tracking-tighter live-text">SIYAM <span class="text-purple-500">VAULT</span></h1>
-            <p class="text-purple-300 text-[10px] mb-10 uppercase tracking-[0.2em] live-text">Next-Gen Storage</p>
-            
-            <div class="space-y-5">
-                <input type="email" id="u-email" placeholder="Gmail Address" class="glass-input">
-                <input type="password" id="u-token" placeholder="GitHub Token" class="glass-input">
-                <button id="login-btn" onclick="handleLogin()" class="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-black rounded-2xl uppercase text-[11px] tracking-widest shadow-lg shadow-purple-500/20 active:scale-95 transition-all mt-4">Unlock System</button>
-            </div>
+            <h1 class="text-4xl font-black mb-1 italic live-text">SIYAM <span class="text-purple-500">VAULT</span></h1>
+            <p class="text-purple-300 text-[10px] mb-10 uppercase tracking-widest live-text">Next-Gen Storage</p>
+            <input type="email" id="u-email" placeholder="Gmail Address" class="glass-input mb-4">
+            <input type="password" id="u-token" placeholder="GitHub Token" class="glass-input mb-6">
+            <button onclick="handleLogin()" class="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl font-black uppercase tracking-widest active:scale-95 transition-all">Unlock System</button>
         </div>
     </div>
 
     <div id="dash" class="hidden relative z-10">
         <header class="flex justify-between items-center px-6 py-4 border-b border-white/5 bg-[#0b0b1a]/80 backdrop-blur-xl sticky top-0 z-[100]">
-            <h2 class="text-lg font-black italic tracking-tighter text-purple-500 live-text">DASHBOARD</h2>
-            <button onclick="logout()" class="text-[9px] font-bold border border-red-500/40 text-red-400 px-4 py-2 rounded-full uppercase bg-red-500/5 hover:bg-red-500/20 transition-all">Logout</button>
+            <div class="flex items-center gap-4">
+                <button onclick="openMenu()" class="text-2xl text-purple-500 active:scale-75 transition-all"><i class="fa-solid fa-bars-staggered"></i></button>
+                <div>
+                    <h2 class="text-lg font-black italic text-purple-500 live-text">DASHBOARD</h2>
+                    <p id="file-counter" class="text-[8px] text-white/40 font-bold uppercase"></p>
+                </div>
+            </div>
+            <div id="time-capsule-indicator" class="hidden animate-pulse"><i class="fa-solid fa-clock-rotate-left text-purple-500"></i></div>
         </header>
 
-        <div id="three-container" class="w-full h-[350px] relative border-b border-white/5"></div>
+        <div id="three-container" class="w-full h-[300px] border-b border-white/5"></div>
+        <div id="gallery" class="grid grid-cols-2 md:grid-cols-4 gap-1 p-1 pb-40 min-h-screen"></div>
+    </div>
 
-        <div class="sticky top-[68px] z-[90] bg-[#0b0b1a]/95 backdrop-blur-2xl border-b border-white/5">
-            <div class="flex justify-center gap-10 py-5">
-                <button onclick="switchTab('photos')" id="tab-photos" class="nav-tab active">
-                    <span class="tab-text live-text">PHOTOS</span><div class="glow-dot"></div>
-                </button>
-                <button onclick="switchTab('videos')" id="tab-videos" class="nav-tab">
-                    <span class="tab-text live-text">VIDEOS</span><div class="glow-dot"></div>
-                </button>
-                <button onclick="switchTab('folders')" id="tab-folders" class="nav-tab">
-                    <span class="tab-text live-text">FOLDERS</span><div class="glow-dot"></div>
-                </button>
-            </div>
-            <div id="folder-action-bar" class="hidden flex justify-center gap-4 pb-4 animate-fade-in">
-                <button onclick="createNewFolder()" class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-6 py-2 rounded-full text-[10px] font-black tracking-widest uppercase live-text">NEW FOLDER</button>
-                <button id="move-btn" onclick="startMoveProcess()" class="hidden bg-blue-500/10 text-blue-400 border border-blue-500/20 px-6 py-2 rounded-full text-[10px] font-black tracking-widest uppercase live-text">MOVE SELECTED</button>
+    <div id="media-modal" class="hidden fixed inset-0 z-[1000] bg-black flex flex-col items-center justify-center">
+        <div class="absolute top-6 left-6 right-6 flex justify-between z-[1100]">
+            <button onclick="closeModal()" class="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center border border-white/10"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <div class="flex gap-4">
+                <button id="fav-btn" class="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-red-500"><i class="fa-solid fa-heart"></i></button>
+                <button id="del-btn" class="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center border border-white/10 text-orange-500"><i class="fa-solid fa-trash"></i></button>
             </div>
         </div>
-
-        <div id="gallery" class="grid grid-cols-2 md:grid-cols-4 gap-1 p-1 pb-40 min-h-screen"></div>
+        <div id="modal-content" class="w-full h-full flex items-center justify-center animate-zoom-in p-4">
+            </div>
     </div>
 
     <label id="upload-fab" class="hidden fixed bottom-8 right-8 w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center cursor-pointer shadow-2xl z-[200] border border-white/20 active:scale-90 transition-all">
