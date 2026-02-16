@@ -1,15 +1,33 @@
-body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #1a1a1a; color: white; margin: 0; }
-.hidden { display: none; }
-#login-container { margin-top: 150px; text-align: center; }
-input { padding: 12px; width: 280px; margin-bottom: 10px; border-radius: 5px; border: none; }
-button { padding: 12px 20px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 5px; }
-.logout-btn { background: #dc3545; margin-left: 10px; }
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+body { background: #000; color: #fff; }
+.hidden { display: none !important; }
 
-header { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: #333; }
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; padding: 20px; }
-.grid img, .grid video { width: 100%; height: 180px; object-fit: cover; border-radius: 5px; cursor: pointer; }
+/* Login */
+#login-screen { height: 100vh; display: flex; align-items: center; justify-content: center; background: #f8faff; color: #000; }
+.login-card { text-align: center; width: 320px; padding: 30px; background: #fff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 12px; border: 1px solid #ddd; background: #eef3ff; }
+.login-btn { width: 100%; padding: 12px; background: #1a1a1a; color: #fff; border: none; border-radius: 12px; cursor: pointer; }
 
-.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; }
-#modal-content img, #modal-content video { max-width: 90%; max-height: 70vh; }
-.modal-actions { margin-top: 20px; }
-#download-btn { background: #28a745; padding: 10px 20px; color: white; text-decoration: none; border-radius: 5px; }
+/* Gallery Top Nav */
+.top-nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #000; position: sticky; top: 0; z-index: 10; }
+.tabs { display: flex; gap: 20px; font-size: 18px; }
+.tabs span { opacity: 0.5; cursor: pointer; }
+.tabs span.active { opacity: 1; border-bottom: 2px solid #38bdf8; }
+
+.stats-bar { text-align: center; font-size: 12px; color: #888; margin: 10px 0; }
+.date-header { padding: 10px 20px; font-size: 16px; font-weight: bold; }
+
+/* Grid Styling (Exact like your screenshot) */
+.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; }
+.grid img, .grid video { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; cursor: pointer; }
+
+/* Floating Button */
+.fab { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: #38bdf8; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); cursor: pointer; z-index: 10; }
+
+/* Modal */
+.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; display: flex; align-items: center; justify-content: center; }
+.modal-overlay { position: absolute; width: 100%; height: 100%; background: rgba(0,0,0,0.95); }
+.modal-body { position: relative; width: 100%; text-align: center; }
+#modal-content img, #modal-content video { max-width: 100%; max-height: 80vh; }
+.modal-footer { margin-top: 20px; display: flex; justify-content: space-around; }
+#download-btn { color: #38bdf8; text-decoration: none; font-weight: bold; }
