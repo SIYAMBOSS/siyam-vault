@@ -1,11 +1,15 @@
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-body { font-family: 'Inter', sans-serif; background: #0b0b1a; color: white; }
-.glass-input { @apply w-full p-4 bg-white/5 border border-white/10 rounded-2xl text-white outline-none focus:border-cyan-500 transition-all duration-300; }
-.menu-link { @apply w-full flex items-center gap-4 p-4 rounded-2xl text-[10px] font-black tracking-widest text-white/40 transition-all duration-300; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+body { font-family: 'Segoe UI', Roboto, sans-serif; background: #0b0b1a; color: white; }
+
+.premium-box { @apply bg-white/5 border border-white/10 rounded-2xl transition-all duration-300; }
+.premium-box:focus-within { @apply border-cyan-500/50 bg-white/10; }
+.box-input { @apply w-full p-4 bg-transparent border-none text-white text-sm placeholder:text-white/20; }
+
+.menu-link { @apply w-full flex items-center gap-4 p-4 rounded-2xl text-[10px] font-black tracking-widest text-white/40 transition-all; }
 .menu-link.active { @apply text-cyan-400 bg-cyan-500/10 border-r-4 border-cyan-500; }
-.menu-link:hover { @apply bg-white/5 translate-x-2 text-white; }
-.badge { @apply ml-auto text-[7px] opacity-30; }
-.media-item { aspect-ratio: 3/4; @apply overflow-hidden bg-white/5 rounded-2xl active:scale-95 transition-all; animation: slideUp 0.5s ease-out forwards; opacity: 0; }
-@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-.action-btn { @apply w-14 h-14 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center transition-all active:scale-90; }
+
+.media-item { aspect-ratio: 3/4; @apply bg-white/5 overflow-hidden active:scale-95 transition-all cursor-pointer; }
+.media-item img, .media-item video { transition: transform 0.5s; }
+.media-item:hover img { transform: scale(1.1); }
+
 ::-webkit-scrollbar { width: 0; }
