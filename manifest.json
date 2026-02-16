@@ -5,7 +5,8 @@
     {
       "src": "logo.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "logo.png",
@@ -13,8 +14,9 @@
       "type": "image/png"
     }
   ],
-  "start_url": ".",
+  "start_url": "./index.html",
   "display": "standalone",
   "theme_color": "#0b0b1a",
-  "background_color": "#0b0b1a"
+  "background_color": "#0b0b1a",
+  "orientation": "portrait"
 }
