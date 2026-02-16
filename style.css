@@ -1,39 +1,36 @@
 :root { --accent: #38bdf8; --bg: #000; }
-body { background: var(--bg); color: white; margin: 0; font-family: sans-serif; }
+body { background: var(--bg); color: white; margin: 0; font-family: 'Poppins', sans-serif; }
 .hidden { display: none !important; }
 
-/* ট্যাব মাঝখানে রাখার জন্য */
-.nav-container { display: flex; justify-content: center; align-items: center; padding: 15px; position: relative; border-bottom: 1px solid #111; }
-.tabs-center { display: flex; gap: 20px; }
-.tab-item { color: #555; font-weight: bold; cursor: pointer; font-size: 16px; padding-bottom: 5px; }
+/* Header Fix */
+.app-header { position: sticky; top: 0; background: #000; z-index: 1000; border-bottom: 1px solid #111; }
+.nav-container { display: flex; justify-content: center; align-items: center; padding: 15px; position: relative; }
+.tabs-center { display: flex; gap: 25px; }
+.tab-item { font-size: 16px; color: #555; cursor: pointer; font-weight: 600; padding-bottom: 5px; }
 .tab-item.active { color: #fff; border-bottom: 2px solid var(--accent); }
-.logout-btn { position: absolute; right: 10px; font-size: 10px; color: #ff4d4d; border: 1px solid #ff4d4d44; padding: 2px 8px; border-radius: 10px; }
+.logout-btn { position: absolute; right: 15px; color: #ff4d4d; border: 1px solid #ff4d4d44; padding: 3px 10px; border-radius: 20px; font-size: 11px; cursor: pointer; }
 
-/* ফ্লোটিং ফিল্টার ডিজাইন */
+/* Upload Cards in Folders */
+.upload-options { display: flex; justify-content: center; gap: 20px; padding: 25px 10px; }
+.upload-card { background: #0a0a0a; border: 1px dashed var(--accent); padding: 20px; border-radius: 15px; text-align: center; width: 120px; cursor: pointer; transition: 0.3s; }
+.upload-card:active { transform: scale(0.95); background: #111; }
+.upload-card .icon { font-size: 24px; display: block; margin-bottom: 5px; }
+.upload-card p { margin: 0; font-size: 12px; color: var(--accent); font-weight: bold; }
+
+/* Floating Bar Fixed */
 .filter-bar { 
-    position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%); 
-    background: #1e1e1e; padding: 5px; border-radius: 50px; display: flex; gap: 5px; 
-    border: 1px solid #333; z-index: 100; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    position: fixed; bottom: 75px; left: 50%; transform: translateX(-50%); 
+    background: #151515; padding: 6px 12px; border-radius: 50px; display: flex; 
+    gap: 10px; border: 1px solid #333; z-index: 2000; 
 }
-.filter-item { padding: 6px 15px; border-radius: 30px; font-size: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+.filter-item { padding: 6px 15px; border-radius: 30px; font-size: 13px; font-weight: 600; cursor: pointer; color: #888; display: flex; align-items: center; gap: 5px; }
 .filter-item.active { background: #333; color: var(--accent); }
-.count-badge { background: var(--accent); color: #000; padding: 1px 6px; border-radius: 10px; font-size: 10px; }
+.count-badge { background: var(--accent); color: #000; font-size: 10px; padding: 1px 6px; border-radius: 10px; }
 
-/* গ্রিড ডিজাইন */
-.date-group-header { padding: 15px 10px 5px; font-size: 12px; color: #777; font-weight: bold; }
+/* Event Button */
+.create-folder-btn { background: #000; color: var(--accent); padding: 14px 30px; border-radius: 40px; border: 1px solid var(--accent); font-weight: bold; cursor: pointer; font-size: 14px; box-shadow: 0 0 15px rgba(56, 189, 248, 0.1); }
+
+/* Grid */
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
 .media-item { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
-
-/* ইভেন্ট আপলোড বাটন */
-.upload-options { display: flex; justify-content: center; gap: 15px; padding: 20px; }
-.upload-card { background: #111; border: 1px solid #222; padding: 15px; border-radius: 15px; text-align: center; width: 100px; animation: pulse 2s infinite; font-size: 12px; }
-
-@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-
-/* ফুটার */
-#gallery-footer { position: fixed; bottom: 0; width: 100%; padding: 12px; text-align: center; background: #000; border-top: 1px solid #111; font-size: 12px; color: #555; }
-
-/* মোডাল বাটন */
-.modal-actions-bottom { position: absolute; bottom: 20px; width: 90%; display: flex; gap: 10px; }
-.btn-save { flex: 2; background: var(--accent); color: #000; border: none; padding: 12px; border-radius: 10px; font-weight: bold; }
-.btn-del-modal { flex: 1; background: #ff4d4d; color: #fff; border: none; padding: 12px; border-radius: 10px; font-weight: bold; }
+#gallery-footer { position: fixed; bottom: 0; width: 100%; padding: 15px; text-align: center; background: #000; font-size: 12px; color: #444; border-top: 1px solid #111; }
