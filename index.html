@@ -1,52 +1,37 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIYAM VAULT</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-black text-white selection:bg-blue-500">
+<body class="bg-black text-white">
 
-    <section id="login-page" class="flex flex-col items-center justify-center min-h-screen p-6">
-        <h1 class="text-3xl font-black mb-8 text-blue-500 italic uppercase">SIYAM VAULT</h1>
-        <div class="w-full max-w-xs space-y-4">
-            <input type="email" id="email" placeholder="Gmail" class="w-full p-4 bg-zinc-900 rounded-2xl outline-none border border-zinc-800 focus:border-blue-600 transition-all">
-            <input type="password" id="token" placeholder="GitHub Token" class="w-full p-4 bg-zinc-900 rounded-2xl outline-none border border-zinc-800 focus:border-blue-600 transition-all">
-            <button onclick="saveAndEnter()" class="w-full p-4 bg-blue-600 rounded-2xl font-black uppercase tracking-widest active:scale-95 transition-all">Login</button>
+    <div id="login-box" class="flex flex-col items-center justify-center min-h-screen p-6">
+        <h1 class="text-3xl font-bold mb-6 text-blue-500">VAULT LOGIN</h1>
+        <input type="email" id="u-email" placeholder="Gmail" class="w-full max-w-xs p-4 bg-zinc-900 rounded-xl mb-3 outline-none">
+        <input type="password" id="u-token" placeholder="GitHub Token" class="w-full max-w-xs p-4 bg-zinc-900 rounded-xl mb-6 outline-none">
+        <button onclick="login()" class="w-full max-w-xs p-4 bg-blue-600 rounded-xl font-bold">ENTER</button>
+    </div>
+
+    <div id="dash" class="hidden">
+        <div class="p-5 flex justify-between border-b border-zinc-900">
+            <span class="font-bold">SIYAMBOSS</span>
+            <button onclick="logout()" class="text-red-500 text-xs">LOGOUT</button>
         </div>
-    </section>
 
-    <main id="dashboard" class="hidden min-h-screen pb-24">
-        <header class="p-6 flex justify-between items-center border-b border-zinc-900 sticky top-0 bg-black/80 backdrop-blur-lg z-50">
-            <h2 class="text-xl font-black italic">SIYAM<span class="text-blue-500">BOSS</span></h2>
-            <button onclick="exit()" class="text-red-500 text-[10px] font-black uppercase border border-red-500/30 px-3 py-1 rounded-lg">Logout</button>
-        </header>
+        <div class="flex justify-around p-5">
+            <button onclick="load('photos')" class="font-bold border-b-2 border-blue-500 pb-1">PHOTOS</button>
+            <button onclick="load('videos')" class="font-bold">VIDEOS</button>
+        </div>
 
-        <nav class="flex justify-center gap-12 p-6">
-            <button onclick="show('photos')" id="btn-photos" class="text-blue-500 font-black border-b-2 border-blue-500 pb-1 text-xs tracking-widest uppercase">Photos</button>
-            <button onclick="show('videos')" id="btn-videos" class="text-zinc-500 font-black pb-1 text-xs tracking-widest uppercase">Videos</button>
-        </nav>
+        <div id="gallery" class="grid grid-cols-3 gap-1"></div>
 
-        <div id="photos" class="grid grid-cols-3 gap-0.5 animate-fade-in"></div>
-        <div id="videos" class="hidden grid grid-cols-2 gap-2 p-2 animate-fade-in"></div>
-
-        <label class="fixed bottom-8 right-8 w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center cursor-pointer shadow-2xl z-50 active:scale-90 transition-all">
-            <i class="fa-solid fa-cloud-arrow-up text-white text-2xl"></i>
-            <input type="file" id="file-input" class="hidden" multiple onchange="startUpload(this)">
+        <label class="fixed bottom-10 right-10 w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center cursor-pointer shadow-2xl">
+            <span class="text-3xl">+</span>
+            <input type="file" id="file-up" class="hidden" multiple onchange="upload(this)">
         </label>
-    </main>
-
-    <div id="delete-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4">
-        <div class="bg-zinc-900 p-8 rounded-3xl w-full max-w-xs text-center border border-zinc-800">
-            <h3 class="font-black mb-6">DELETE FILE?</h3>
-            <div class="flex gap-4">
-                <button onclick="closeDelete()" class="flex-1 py-3 rounded-xl bg-zinc-800 font-bold text-xs uppercase">No</button>
-                <button id="confirm-delete-btn" class="flex-1 py-3 rounded-xl bg-red-600 font-bold text-xs uppercase">Yes, Delete</button>
-            </div>
-        </div>
     </div>
 
     <script src="script.js"></script>
