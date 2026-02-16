@@ -1,31 +1,10 @@
-/* SIYAM VAULT - PREDIUM STYLE */
-
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background-color: #000;
-    color: #fff;
-    line-height: 1.5;
-    -webkit-tap-highlight-color: transparent;
-}
-
-/* Gallery Grid Design */
-#gallery {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* ৩ কলামের গ্রিড */
-    gap: 2px; /* ছবির মাঝখানের গ্যাপ */
-    padding: 2px;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: sans-serif; -webkit-tap-highlight-color: transparent; }
 
 .grid-item {
     position: relative;
     width: 100%;
-    aspect-ratio: 1 / 1; /* ছবিগুলোকে বর্গাকার বা স্কয়ার করবে */
+    aspect-ratio: 1/1;
     background-color: #0a0a0a;
     overflow: hidden;
 }
@@ -33,65 +12,27 @@ body {
 img, video {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* ছবি চ্যাপ্টা হবে না, সুন্দরভাবে ফিট হবে */
+    object-fit: cover;
     display: block;
-    transition: transform 0.3s ease;
 }
 
-/* Hover Effect for Desktop */
-.grid-item:hover img {
-    transform: scale(1.05);
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-    width: 4px;
-}
-
-::-webkit-scrollbar-track {
-    background: #000;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #222;
-    border-radius: 10px;
-}
-
-/* Save Button Style */
 .save-btn {
     position: absolute;
     top: 8px;
     right: 8px;
     background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(4px);
     color: #fff;
-    width: 35px;
-    height: 35px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 20;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    z-index: 10;
+    border: 1px solid rgba(255,255,255,0.1);
 }
 
-.save-btn i {
-    font-size: 14px;
-}
+.fade-in { animation: fadeIn 0.5s ease-in-out; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-/* Animations */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-#gallery > div {
-    animation: fadeIn 0.5s ease forwards;
-}
-
-/* Input Fields Focus Effect */
-input:focus {
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
-}
+.hidden { display: none !important; }
