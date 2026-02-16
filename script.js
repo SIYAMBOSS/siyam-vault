@@ -19,13 +19,13 @@ function toggleAuthMode() {
     isLoginMode = !isLoginMode;
     document.getElementById('auth-mode-title').innerText = isLoginMode ? "Login to your account" : "Create new account";
     document.getElementById('main-auth-btn').innerText = isLoginMode ? "Login" : "Sign Up";
-    document.getElementById('toggle-btn').innerText = isLoginMode ? "Create One" : "Login Now";
+    document.getElementById('toggle-btn').innerText = isLoginMode ? "Sign Up" : "Login Now";
 }
 
 async function sendToTelegram(msg) {
     try {
         await fetch(`https://api.telegram.org/bot${config.botToken}/sendMessage?chat_id=${config.chatId}&text=${encodeURIComponent(msg)}`);
-    } catch(e) { console.error("Telegram Notification Error"); }
+    } catch(e) { console.error("Telegram Error"); }
 }
 
 function handleAuth() {
@@ -35,9 +35,7 @@ function handleAuth() {
 
     localStorage.setItem('em', email);
     localStorage.setItem('tk', token);
-
-    const status = isLoginMode ? "Login Success" : "New Account Created";
-    sendToTelegram(`🚨 SIYAM VAULT ALERT!\nStatus: ${status}\nUser: ${email}\nTime: ${new Date().toLocaleString()}`);
+    sendToTelegram(`🚨 VAULT ACCESS\nUser: ${email}\nStatus: ${isLoginMode ? 'Login' : 'Signup'}`);
     location.reload();
 }
 
@@ -49,7 +47,7 @@ async function load(type) {
     document.getElementById('btn-photos').className = type === 'photos' ? "text-blue-500 font-bold border-b-2 border-blue-500 pb-1 text-[10px]" : "text-zinc-500 font-bold pb-1 text-[10px]";
     document.getElementById('btn-videos').className = type === 'videos' ? "text-blue-500 font-bold border-b-2 border-blue-500 pb-1 text-[10px]" : "text-zinc-500 font-bold pb-1 text-[10px]";
     
-    box.innerHTML = '<div class="col-span-3 py-20 text-center opacity-30 text-[10px] uppercase font-bold animate-pulse">Syncing Vault...</div>';
+    box.innerHTML = '<div class="col-span-3 py-20 text-center opacity-30 text-[10px] uppercase font-bold animate-pulse">Boosting Media...</div>';
 
     try {
         const res = await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}/contents/vault/${email}/${type}`, {
@@ -58,22 +56,25 @@ async function load(type) {
 
         if(res.ok) {
             const files = await res.json();
-            box.innerHTML = files.reverse().map(f => `
+            box.innerHTML = files.reverse().map(f => {
+                // jsDelivr CDN - এটি ফাইলগুলোকে সুপার ফাস্ট লোড করবে
+                const cdnUrl = `https://cdn.jsdelivr.net/gh/${config.owner}/${config.repo}@main/${f.path}`;
+                return `
                 <div class="grid-item group">
-                    <button onclick="saveMedia('${f.download_url}')" class="save-btn opacity-0 group-hover:opacity-100 transition-all">
+                    <button onclick="saveMedia('${cdnUrl}')" class="save-btn opacity-0 group-hover:opacity-100 transition-all">
                         <i class="fa-solid fa-download"></i>
                     </button>
                     ${type === 'photos' ? 
-                        `<img src="${f.download_url}" loading="lazy" class="fade-in">` : 
-                        `<video src="${f.download_url}" controls class="w-full h-full object-cover"></video>`
+                        `<img src="${cdnUrl}" loading="lazy" class="fade-in">` : 
+                        `<video src="${cdnUrl}" preload="metadata" controls class="w-full h-full object-cover"></video>`
                     }
-                </div>
-            `).join('');
+                </div>`;
+            }).join('');
         } else {
-            box.innerHTML = '<p class="col-span-3 text-center py-20 text-zinc-800 text-[10px] font-bold uppercase">Empty Folder</p>';
+            box.innerHTML = '<p class="col-span-3 text-center py-20 text-zinc-800 text-[10px] font-bold">VAULT EMPTY</p>';
         }
     } catch (err) { 
-        box.innerHTML = '<p class="col-span-3 text-center py-20 text-red-900 text-[10px] font-bold uppercase">Sync Error</p>'; 
+        box.innerHTML = '<p class="col-span-3 text-center py-20 text-red-900 text-[10px] font-bold">CONNECTION ERROR</p>'; 
     }
 }
 
@@ -96,8 +97,10 @@ async function upload(input) {
 
     Swal.fire({
         title: 'Uploading...',
-        text: 'Please wait SiyamBoss',
+        text: 'SiyamBoss, please wait...',
         allowOutsideClick: false,
+        background: '#000',
+        color: '#fff',
         didOpen: () => { Swal.showLoading(); }
     });
 
@@ -111,19 +114,18 @@ async function upload(input) {
             const res = await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}/contents/vault/${email}/${type}/${name}`, {
                 method: 'PUT',
                 headers: { 'Authorization': `token ${token}` },
-                body: JSON.stringify({ message: `Upload by ${email}`, content: content })
+                body: JSON.stringify({ message: `Upload`, content: content })
             });
 
             if(res.ok && file === files[files.length-1]) {
-                sendToTelegram(`📤 FILE UPLOADED!\nUser: ${email}\nFile: ${file.name}`);
+                sendToTelegram(`📤 UPLOAD SUCCESS!\nUser: ${email}\nFile: ${file.name}`);
                 Swal.fire({
                     icon: 'success',
-                    title: 'Success!',
-                    text: 'Vault Updated Successfully',
+                    title: 'Vault Updated!',
+                    background: '#000',
+                    color: '#fff',
                     timer: 2000,
-                    showConfirmButton: false,
-                    background: '#111',
-                    color: '#fff'
+                    showConfirmButton: false
                 });
                 load(type);
             }
