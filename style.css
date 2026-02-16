@@ -1,6 +1,11 @@
-.auth-input { @apply w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl outline-none focus:border-emerald-500 text-sm; }
-.tab-btn { @apply text-zinc-600 text-[10px] font-black tracking-widest transition-all px-4 py-2; }
-.tab-btn.active { @apply text-emerald-500 border-b-2 border-emerald-500; }
-.action-btn { @apply flex items-center gap-2 px-8 py-4 bg-white/5 border border-white/10 rounded-2xl font-bold uppercase text-[10px]; }
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600;900&display=swap');
+body { font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+.glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); }
+.glass-input { @apply w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl outline-none focus:border-purple-500/50 transition-all text-sm; }
+.nav-tab { @apply text-[10px] font-black tracking-[0.3em] text-white/30 transition-all pb-2 border-b-2 border-transparent; }
+.nav-tab.active { @apply text-white border-purple-500; }
+.tool-btn { @apply px-4 py-2 rounded-xl bg-white/5 border text-[9px] font-bold tracking-widest transition-all hover:bg-white/10; }
+.action-btn { @apply px-8 py-3 bg-white/5 border border-white/10 rounded-xl font-bold text-[10px] tracking-widest; }
+#stars { position: absolute; width: 100%; height: 100%; background: transparent url('https://www.transparenttextures.com/patterns/stardust.png') repeat; opacity: 0.6; }
+.selected-item { border: 4px solid #10b981 !important; transform: scale(0.95); opacity: 0.6; }
 ::-webkit-scrollbar { width: 0; }
-canvas { filter: brightness(0.8) contrast(1.1); }
