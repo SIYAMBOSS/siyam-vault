@@ -1,16 +1,12 @@
 {
-  "name": "ZeroDay Ultra Vault",
+  "name": "ZeroDay Vault Pro",
   "short_name": "ZeroDay",
-  "description": "Secure Private Cloud Vault by SIYAMBOSS",
   "icons": [
-    {
-      "src": "logo.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
+    {"src": "logo.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "logo.png", "sizes": "512x512", "type": "image/png"}
   ],
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0b0b1a",
-  "theme_color": "#06b6d4"
+  "theme_color": "#0b0b1a"
 }
