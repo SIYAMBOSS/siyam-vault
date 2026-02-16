@@ -1,60 +1,72 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Siyam Vault - Premium Gallery</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Siyam Vault Pro</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <div id="login-screen">
         <div class="login-card">
             <div class="logo">🔐</div>
-            <h1>Welcome Back</h1>
+            <h1 class="animated-text">Welcome Back</h1>
             <p class="subtitle">Sign in to Siyam Vault</p>
-            <input type="email" id="email" placeholder="sadaf245sz@gmail.com">
+            <input type="email" id="email" placeholder="Enter Your Gmail">
             <input type="password" id="token" placeholder="Enter GitHub Token">
-            <button class="login-btn" onclick="login()">LOGIN</button>
-            <p class="footer-link">Don't have access? <span>Sign Up</span></p>
+            <button class="login-btn" onclick="login()">UNLOCK VAULT</button>
+            <p class="footer-link">GitHub Token এর জন্য Admin Siyam এর কাছে নক দিন</p>
         </div>
     </div>
 
     <div id="gallery-container" class="hidden">
         <header class="app-header">
             <div class="nav-top">
-                <span class="icon">🔍</span>
                 <div class="tabs">
-                    <span class="tab-item active" onclick="switchTab('photos')">PHOTOS</span>
-                    <span class="tab-item" onclick="switchTab('videos')">VIDEOS</span>
-                    <span class="tab-item" onclick="switchTab('folders')">FOLDERS</span>
+                    <span class="tab-item active animated-text" onclick="switchTab('photos')">PHOTOS</span>
+                    <span class="tab-item animated-text" onclick="switchTab('videos')">VIDEOS</span>
+                    <span class="tab-item animated-text" onclick="switchTab('folders')">FOLDERS</span>
                 </div>
-                <span class="icon" onclick="logout()">⋮</span>
+                <span class="logout-icon" onclick="logout()">Logout</span>
             </div>
         </header>
 
         <div class="slider-container">
-            <div id="carousel" class="carousel">
-                </div>
+            <div id="carousel" class="carousel"></div>
         </div>
 
-        <div class="section-title">Yesterday</div>
+        <div id="folder-view" class="content-section hidden">
+            <button class="create-folder-btn" onclick="createNewFolder()">+ Create New Folder</button>
+            <div id="folder-grid" class="grid-3"></div>
+        </div>
 
-        <div id="media-grid" class="grid">
-            </div>
+        <div id="main-gallery" class="content-section">
+            <div class="date-header animated-text">Recent Media</div>
+            <div id="media-grid" class="grid-3"></div>
+        </div>
 
-        <input type="file" id="file-input" hidden onchange="uploadFile()">
+        <input type="file" id="file-input" hidden multiple onchange="uploadFiles()">
         <div class="fab" onclick="document.getElementById('file-input').click()">+</div>
+    </div>
+
+    <div id="upload-popup" class="upload-popup hidden">
+        <div class="popup-content">
+            <div class="spinner"></div>
+            <p id="upload-status">Uploading to Vault...</p>
+            <div class="progress-bar-bg"><div id="progress-bar" class="progress-bar"></div></div>
+        </div>
     </div>
 
     <div id="modal" class="modal hidden">
         <div class="modal-overlay" onclick="closeModal()"></div>
         <div class="modal-body">
+            <span class="close-btn" onclick="closeModal()">❌</span>
             <div id="modal-content"></div>
             <div class="modal-actions">
-                <a id="download-btn" download>Download</a>
-                <button class="del-btn" onclick="deleteFile()">Delete</button>
+                <button class="btn-dl" onclick="downloadOriginal()">Download</button>
+                <button class="btn-del" onclick="deleteFile()">Delete</button>
             </div>
         </div>
     </div>
