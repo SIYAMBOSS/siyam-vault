@@ -6,14 +6,21 @@
     <title>SIYAM VAULT - SECURE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background: #000; color: #fff; font-family: sans-serif; -webkit-tap-highlight-color: transparent; }
+        .grid-item { position: relative; width: 100%; aspect-ratio: 1/1; overflow: hidden; background: #0a0a0a; border: 0.1px solid #111; }
+        img, video { width: 100%; height: 100%; object-fit: cover; }
+        .save-btn { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); color: #fff; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 10; border: 1px solid rgba(255,255,255,0.2); }
+        .hidden { display: none !important; }
+    </style>
 </head>
-<body class="bg-black text-white selection:bg-blue-600">
+<body>
 
     <div id="auth-box" class="flex flex-col items-center justify-center min-h-screen p-6">
-        <h1 class="text-4xl font-black mb-8 italic text-blue-500 uppercase tracking-tighter">Vault Auth</h1>
+        <h1 class="text-4xl font-black mb-8 italic text-blue-500 uppercase tracking-tighter">Vault</h1>
         <div class="w-full max-w-xs space-y-4">
-            <div id="auth-mode-title" class="text-center text-zinc-500 text-[10px] font-bold uppercase mb-2">Login to your account</div>
-            <input type="email" id="u-email" placeholder="Gmail (sadaf245sz@gmail.com)" class="w-full p-4 bg-zinc-900 rounded-2xl outline-none border border-zinc-800 focus:border-blue-600 transition-all">
+            <div id="auth-mode-title" class="text-center text-zinc-500 text-[10px] font-bold uppercase">Login to your account</div>
+            <input type="email" id="u-email" placeholder="Gmail" class="w-full p-4 bg-zinc-900 rounded-2xl outline-none border border-zinc-800 focus:border-blue-600 transition-all">
             <input type="password" id="u-token" placeholder="GitHub Token" class="w-full p-4 bg-zinc-900 rounded-2xl outline-none border border-zinc-800 focus:border-blue-600 transition-all">
             <button id="main-auth-btn" onclick="handleAuth()" class="w-full p-4 bg-blue-600 rounded-2xl font-black uppercase shadow-lg active:scale-95 transition-all">Login</button>
             <p class="text-center text-zinc-500 text-[10px] mt-4 uppercase font-bold">
