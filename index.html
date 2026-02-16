@@ -3,42 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIYAM VAULT - ULTRA FAST</title>
+    <title>SIYAM VAULT - FINAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; transition: background 0.5s; }
+        .grid-item { position: relative; aspect-ratio: 1/1; background: #0a0a0a; overflow: hidden; border: 0.1px solid #111; }
+        img, video { width: 100%; height: 100%; object-fit: cover; }
+        .save-btn { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); color: #fff; width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; z-index: 10; border: 1px solid rgba(255,255,255,0.1); }
+        .hidden { display: none !important; }
+    </style>
 </head>
-<body class="bg-black text-white selection:bg-blue-600">
+<body class="bg-[#f8faff]">
 
-    <div id="auth-box" class="flex flex-col items-center justify-center min-h-screen p-6">
-        <h1 class="text-4xl font-black mb-8 italic text-blue-500 uppercase tracking-tighter">Vault</h1>
-        <div class="w-full max-w-xs space-y-4">
-            <input type="email" id="u-email" placeholder="Gmail" class="w-full p-4 bg-zinc-900 rounded-2xl outline-none border border-zinc-800 focus:border-blue-600 transition-all text-sm">
-            <input type="password" id="u-token" placeholder="GitHub Token" class="w-full p-4 bg-zinc-900 rounded-2xl outline-none border border-zinc-800 focus:border-blue-600 transition-all text-sm">
-            <button id="main-auth-btn" onclick="handleAuth()" class="w-full p-4 bg-blue-600 rounded-2xl font-black uppercase shadow-lg active:scale-95 transition-all">Login</button>
-            <p class="text-center text-zinc-500 text-[10px] mt-4 uppercase font-bold tracking-widest">
-                <span id="toggle-text">New here?</span> 
-                <button onclick="toggleAuthMode()" id="toggle-btn" class="text-blue-500 ml-1">Sign Up</button>
-            </p>
+    <div id="auth-box" class="flex items-center justify-center min-h-screen p-4">
+        <div class="w-full max-w-sm bg-white p-8 rounded-[40px] shadow-2xl shadow-blue-100 border border-white">
+            <h1 id="auth-title" class="text-3xl font-bold mb-1 text-zinc-900 text-center">Welcome Back</h1>
+            <p id="auth-sub" class="text-zinc-400 text-sm mb-8 text-center">Sign in to continue</p>
+
+            <div class="space-y-3">
+                <div id="signup-fields" class="hidden space-y-3">
+                    <input type="text" id="u-name" placeholder="Full Name" class="w-full px-5 py-3 bg-zinc-50 border border-zinc-100 rounded-2xl outline-none focus:border-emerald-400 text-sm">
+                    <input type="number" id="u-phone" placeholder="Phone Number" class="w-full px-5 py-3 bg-zinc-50 border border-zinc-100 rounded-2xl outline-none focus:border-emerald-400 text-sm">
+                </div>
+
+                <input type="email" id="u-email" placeholder="Gmail" class="w-full px-5 py-3 bg-zinc-50 border border-zinc-100 rounded-2xl outline-none focus:border-emerald-400 text-sm">
+                <input type="password" id="u-token" placeholder="GitHub Token (Password)" class="w-full px-5 py-3 bg-zinc-50 border border-zinc-100 rounded-2xl outline-none focus:border-emerald-400 text-sm">
+                <input type="password" id="u-token-confirm" placeholder="Confirm Token" class="hidden w-full px-5 py-3 bg-zinc-50 border border-zinc-100 rounded-2xl outline-none focus:border-emerald-400 text-sm">
+
+                <button onclick="handleAuth()" id="main-auth-btn" class="w-full py-4 bg-zinc-900 text-white font-bold rounded-2xl shadow-lg hover:bg-emerald-500 transition-all mt-4 uppercase tracking-widest text-sm">Login</button>
+
+                <p class="text-center text-xs text-zinc-400 mt-6">
+                    <span id="toggle-text">Don't have an account?</span>
+                    <button onclick="toggleAuthMode()" id="toggle-btn" class="text-emerald-500 font-bold ml-1">Sign Up</button>
+                </p>
+            </div>
         </div>
     </div>
 
-    <div id="dash" class="hidden min-h-screen">
-        <header class="p-5 flex justify-between items-center border-b border-zinc-900 sticky top-0 bg-black/90 backdrop-blur-xl z-50">
-            <h2 class="text-xl font-bold italic text-blue-500 tracking-tighter uppercase">SiyamBoss</h2>
+    <div id="dash" class="hidden min-h-screen bg-black">
+        <header class="p-5 flex justify-between items-center border-b border-zinc-900 sticky top-0 bg-black/90 backdrop-blur-md z-50">
+            <h2 class="text-xl font-bold italic text-emerald-500 uppercase">Siyam Vault</h2>
             <button onclick="logout()" class="text-red-500 text-[10px] font-bold uppercase border border-red-500/20 px-3 py-1 rounded-lg">Logout</button>
         </header>
 
         <nav class="flex justify-center gap-10 p-6">
-            <button onclick="load('photos')" id="btn-photos" class="text-blue-500 font-bold border-b-2 border-blue-500 pb-1 uppercase text-[10px]">Photos</button>
+            <button onclick="load('photos')" id="btn-photos" class="text-emerald-500 font-bold border-b-2 border-emerald-500 pb-1 uppercase text-[10px]">Photos</button>
             <button onclick="load('videos')" id="btn-videos" class="text-zinc-500 font-bold pb-1 uppercase text-[10px]">Videos</button>
         </nav>
 
         <div id="gallery" class="grid grid-cols-3 gap-0.5"></div>
 
-        <label class="fixed bottom-8 right-8 w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center cursor-pointer shadow-2xl z-50 active:scale-90 transition-all">
-            <i class="fa-solid fa-cloud-arrow-up text-white text-2xl"></i>
+        <label class="fixed bottom-8 right-8 w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center cursor-pointer shadow-2xl z-50 active:scale-90 transition-all">
+            <i class="fa-solid fa-plus text-white text-2xl"></i>
             <input type="file" id="file-up" class="hidden" multiple onchange="upload(this)">
         </label>
     </div>
