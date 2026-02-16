@@ -1,163 +1,116 @@
-let GITHUB_TOKEN = localStorage.getItem('vault_token') || "ghp_xxxxxxxxxxxx"; // আপনার টোকেন এখানে দিন
-const REPO_OWNER = "SIYAMBOSS";
-const REPO_NAME = "SIYAM-VAULT";
-
-let isRegistering = false;
+const config = { owner: "SIYAMBOSS", repo: "SIYAM-VAULT" };
+let fileToDelete = null;
 
 window.onload = () => {
-    checkBannerStatus();
-    const user = localStorage.getItem('activeUser');
-    if (user) showDashboard();
+    const tk = localStorage.getItem('myToken');
+    const em = localStorage.getItem('myEmail');
+    if(tk && em) {
+        document.getElementById('login-page').classList.add('hidden');
+        document.getElementById('dashboard').classList.remove('hidden');
+        show('photos');
+    }
 };
 
-// ১. ব্যানার সিস্টেম (One-time)
-function checkBannerStatus() {
-    const savedBanner = localStorage.getItem('siyam_permanent_banner');
-    const setupArea = document.getElementById('admin-setup-area');
-    const bannerImg = document.getElementById('fixed-banner');
-    const placeholder = document.getElementById('banner-placeholder');
-
-    if (savedBanner) {
-        bannerImg.src = savedBanner;
-        bannerImg.classList.remove('hidden');
-        placeholder.classList.add('hidden');
-        setupArea.innerHTML = ""; 
-        setupArea.classList.add('hidden');
+function saveAndEnter() {
+    const t = document.getElementById('token').value;
+    const e = document.getElementById('email').value;
+    if(t && e) {
+        localStorage.setItem('myToken', t);
+        localStorage.setItem('myEmail', e);
+        location.reload();
     }
 }
 
-function setupBanner(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        localStorage.setItem('siyam_permanent_banner', e.target.result);
-        checkBannerStatus();
-        alert("Banner set permanently!");
-    };
-    reader.readAsDataURL(file);
+async function show(type) {
+    const token = localStorage.getItem('myToken');
+    const email = localStorage.getItem('myEmail');
+    const box = document.getElementById(type);
+    
+    document.getElementById('btn-photos').className = type === 'photos' ? "text-blue-500 font-black border-b-2 border-blue-500 pb-1 text-xs uppercase" : "text-zinc-500 font-black pb-1 text-xs uppercase";
+    document.getElementById('btn-videos').className = type === 'videos' ? "text-blue-500 font-black border-b-2 border-blue-500 pb-1 text-xs uppercase" : "text-zinc-500 font-black pb-1 text-xs uppercase";
+    
+    document.getElementById('photos').classList.toggle('hidden', type !== 'photos');
+    document.getElementById('videos').classList.toggle('hidden', type !== 'videos');
+
+    box.innerHTML = '<p class="col-span-3 text-center py-20 text-zinc-700 text-[10px] uppercase font-bold animate-pulse">Loading...</p>';
+
+    try {
+        const res = await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}/contents/vault/${email}/${type}?v=${Date.now()}`, {
+            headers: { 'Authorization': `token ${token}` }
+        });
+        const files = await res.json();
+
+        if (res.ok && files.length > 0) {
+            box.innerHTML = files.reverse().map(f => `
+                <div class="relative bg-zinc-900 overflow-hidden group">
+                    <button onclick="downloadFile('${f.download_url}')" class="action-btn dl-btn"><i class="fa-solid fa-download"></i></button>
+                    <button onclick="askDelete('${f.path}', '${f.sha}')" class="action-btn del-btn"><i class="fa-solid fa-trash-can"></i></button>
+                    
+                    ${type === 'photos' ? 
+                        `<img src="${f.download_url}?v=${Date.now()}" loading="lazy">` : 
+                        `<video src="${f.download_url}" class="w-full h-full"></video>`
+                    }
+                </div>
+            `).join('');
+        } else { box.innerHTML = '<p class="col-span-3 text-center py-20 text-zinc-800 text-[10px] font-bold">EMPTY</p>'; }
+    } catch(e) { box.innerHTML = ''; }
 }
 
-// ২. অথেনটিকেশন
-function toggleAuth() {
-    isRegistering = !isRegistering;
-    document.getElementById('reg-fields').classList.toggle('hidden');
-    document.getElementById('auth-title').innerText = isRegistering ? "CREATE" : "LOGIN";
-}
-
-function handleAuth() {
-    const email = document.getElementById('user-email').value;
-    const pin = document.getElementById('pin-1').value;
-    if(email && pin) {
-        localStorage.setItem('activeUser', email);
-        showDashboard();
-    }
-}
-
-function showDashboard() {
-    document.getElementById('auth-section').classList.add('hidden');
-    document.getElementById('dashboard').classList.remove('hidden');
-    switchTab('photos');
-}
-
-function switchTab(tab) {
-    const tabs = ['photos', 'videos'];
-    tabs.forEach(t => {
-        document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
-        document.getElementById(`${t}-content`).classList.toggle('hidden', t !== tab);
-    });
-    loadContent(localStorage.getItem('activeUser'), tab);
-}
-
-// ৩. আপলোড ও প্রগ্রেস বার (No Spinner)
-async function uploadFiles(event) {
-    const files = event.target.files;
-    const email = localStorage.getItem('activeUser');
+async function startUpload(input) {
+    const token = localStorage.getItem('myToken');
+    const email = localStorage.getItem('myEmail');
+    const files = input.files;
     if(!files.length) return;
 
-    const progressContainer = document.getElementById('upload-progress-container');
-    const progressBar = document.getElementById('upload-bar');
-
-    progressContainer.classList.remove('hidden');
-    let total = files.length;
-    let current = 0;
-
     for (let file of files) {
-        await new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                const content = e.target.result.split(',')[1];
-                const type = file.type.startsWith('video') ? 'videos' : 'photos';
-                const path = `vault/${email}/${type}/${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const content = e.target.result.split(',')[1];
+            const type = file.type.startsWith('image') ? 'photos' : 'videos';
+            const name = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
 
-                const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`, {
-                    method: 'PUT',
-                    headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: "Upload", content: content })
-                });
-                if(res.ok) {
-                    current++;
-                    progressBar.style.width = (current / total * 100) + "%";
-                }
-                resolve();
-            };
-            reader.readAsDataURL(file);
-        });
+            const res = await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}/contents/vault/${email}/${type}/${name}`, {
+                method: 'PUT',
+                headers: { 'Authorization': `token ${token}` },
+                body: JSON.stringify({ message: "up", content: content })
+            });
+            if(file === files[files.length-1]) show(type);
+        };
+        reader.readAsDataURL(file);
     }
-
-    setTimeout(() => {
-        progressContainer.classList.add('hidden');
-        progressBar.style.width = "0%";
-        switchTab(files[0].type.startsWith('video') ? 'videos' : 'photos');
-    }, 1000);
 }
 
-// ৪. গ্যালারি লোড
-async function loadContent(email, type) {
-    const container = document.getElementById(`${type}-content`);
-    const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/vault/${email}/${type}`, {
-        headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+// ডাউনলোড লজিক
+function downloadFile(url) {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = "SIYAM_VAULT_" + Date.now();
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+// ডিলিট লজিক
+function askDelete(path, sha) {
+    fileToDelete = { path, sha };
+    document.getElementById('delete-modal').classList.remove('hidden');
+}
+
+function closeDelete() {
+    document.getElementById('delete-modal').classList.add('hidden');
+}
+
+document.getElementById('confirm-delete-btn').onclick = async () => {
+    const token = localStorage.getItem('myToken');
+    const res = await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}/contents/${fileToDelete.path}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `token ${token}` },
+        body: JSON.stringify({ message: "del", sha: fileToDelete.sha })
     });
     if(res.ok) {
-        const files = await res.json();
-        container.innerHTML = files.reverse().map(f => `
-            <div class="relative aspect-square overflow-hidden bg-zinc-900 border-[0.5px] border-zinc-800">
-                ${type === 'videos' ? 
-                    `<video src="${f.download_url}" onclick="openPreview('${f.download_url}', true)"></video>` : 
-                    `<img src="${f.download_url}" onclick="openPreview('${f.download_url}', false)" class="w-full h-full object-cover">`
-                }
-            </div>`).join('');
+        closeDelete();
+        show(fileToDelete.path.includes('photos') ? 'photos' : 'videos');
     }
-}
+};
 
-// ৫. ফিক্সড ডাউনলোড সিস্টেম (Blob Method)
-function openPreview(url, isVideo) {
-    const modal = document.getElementById('preview-modal');
-    const box = document.getElementById('preview-content-box');
-    const downloadBtn = document.getElementById('download-btn');
-    
-    downloadBtn.onclick = () => downloadMedia(url);
-
-    box.innerHTML = isVideo ? `<video src="${url}" controls autoplay></video>` : `<img src="${url}">`;
-    modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-}
-
-async function downloadMedia(url) {
-    const response = await fetch(url);
-    const blob = await response.blob();
-    const blobUrl = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = blobUrl;
-    link.download = "SIYAM_VAULT_" + Date.now();
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
-
-function closePreview() {
-    document.getElementById('preview-modal').classList.add('hidden');
-    document.body.style.overflow = 'auto';
-}
-
-function logout() { localStorage.clear(); location.reload(); }
+function exit() { localStorage.clear(); location.reload(); }
