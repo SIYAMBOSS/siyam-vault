@@ -1,45 +1,39 @@
-:root { --accent: #38bdf8; --bg: #000; --glass: rgba(255, 255, 255, 0.05); }
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-body { background: var(--bg); color: white; padding-bottom: 100px; }
+:root { --accent: #38bdf8; --bg: #000; }
+body { background: var(--bg); color: white; margin: 0; font-family: sans-serif; }
 .hidden { display: none !important; }
 
-/* Header & Tabs */
-.app-header { position: sticky; top: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); z-index: 1000; border-bottom: 1px solid #111; }
-.nav-container { display: flex; justify-content: center; align-items: center; padding: 15px; position: relative; }
-.tabs-center { display: flex; gap: 30px; }
-.tab-item { font-size: 18px; color: #666; cursor: pointer; transition: 0.3s; font-weight: 600; }
+/* ট্যাব মাঝখানে রাখার জন্য */
+.nav-container { display: flex; justify-content: center; align-items: center; padding: 15px; position: relative; border-bottom: 1px solid #111; }
+.tabs-center { display: flex; gap: 20px; }
+.tab-item { color: #555; font-weight: bold; cursor: pointer; font-size: 16px; padding-bottom: 5px; }
 .tab-item.active { color: #fff; border-bottom: 2px solid var(--accent); }
-.logout-btn { position: absolute; right: 15px; color: #ff4d4d; font-size: 12px; font-weight: bold; border: 1px solid #ff4d4d33; padding: 4px 10px; border-radius: 20px; }
+.logout-btn { position: absolute; right: 10px; font-size: 10px; color: #ff4d4d; border: 1px solid #ff4d4d44; padding: 2px 8px; border-radius: 10px; }
 
-/* Floating Filter Bar */
-.filter-bar { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: rgba(30, 35, 45, 0.95); backdrop-filter: blur(15px); padding: 6px; border-radius: 50px; display: flex; gap: 5px; border: 1px solid rgba(255,255,255,0.1); z-index: 2000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: slideUp 0.5s; }
-.filter-item { padding: 8px 20px; border-radius: 40px; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-.filter-item.active { background: #333; box-shadow: 0 0 10px rgba(56, 189, 248, 0.2); }
-.count-badge { background: var(--accent); color: #000; font-size: 10px; padding: 1px 6px; border-radius: 10px; font-weight: 800; }
+/* ফ্লোটিং ফিল্টার ডিজাইন */
+.filter-bar { 
+    position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%); 
+    background: #1e1e1e; padding: 5px; border-radius: 50px; display: flex; gap: 5px; 
+    border: 1px solid #333; z-index: 100; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+.filter-item { padding: 6px 15px; border-radius: 30px; font-size: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+.filter-item.active { background: #333; color: var(--accent); }
+.count-badge { background: var(--accent); color: #000; padding: 1px 6px; border-radius: 10px; font-size: 10px; }
 
-/* Media Grids */
-.date-group-header { padding: 20px 15px 5px; font-size: 14px; font-weight: bold; color: #888; }
-.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 0 5px; }
-.media-item { width: 100%; aspect-ratio: 1/1; object-fit: cover; cursor: pointer; }
+/* গ্রিড ডিজাইন */
+.date-group-header { padding: 15px 10px 5px; font-size: 12px; color: #777; font-weight: bold; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+.media-item { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
 
-/* Event/Album Styling */
-.album-actions { text-align: center; padding: 20px; }
-.create-folder-btn { background: var(--accent); color: #000; padding: 12px 25px; border-radius: 50px; font-weight: 800; border: none; animation: glow 2s infinite; }
-.event-header { display: flex; align-items: center; justify-content: space-between; padding: 15px; }
-.back-btn { background: none; border: 2px solid var(--accent); color: var(--accent); padding: 8px 20px; border-radius: 50px; font-weight: 800; display: flex; align-items: center; gap: 8px; animation: pulse 2s infinite; }
+/* ইভেন্ট আপলোড বাটন */
+.upload-options { display: flex; justify-content: center; gap: 15px; padding: 20px; }
+.upload-card { background: #111; border: 1px solid #222; padding: 15px; border-radius: 15px; text-align: center; width: 100px; animation: pulse 2s infinite; font-size: 12px; }
 
-/* Modal Bottom Actions */
-.modal { position: fixed; inset: 0; z-index: 3000; display: flex; align-items: center; justify-content: center; }
-.modal-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.95); }
-.modal-body { position: relative; width: 95%; max-width: 500px; text-align: center; }
-.close-btn-top { position: absolute; top: -60px; right: 0; font-size: 30px; color: #fff; cursor: pointer; }
-#modal-content img, #modal-content video { width: 100%; border-radius: 15px; max-height: 70vh; object-fit: contain; }
-.modal-actions-bottom { display: flex; gap: 10px; margin-top: 20px; }
-.btn-save { flex: 2; background: var(--accent); color: #000; padding: 15px; border-radius: 12px; font-weight: 800; border: none; }
-.btn-del-modal { flex: 1; background: #ff4d4d; color: #fff; padding: 15px; border-radius: 12px; font-weight: 800; border: none; }
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 
-#gallery-footer { position: fixed; bottom: 0; width: 100%; background: #000; padding: 15px; text-align: center; border-top: 1px solid #111; z-index: 1000; }
+/* ফুটার */
+#gallery-footer { position: fixed; bottom: 0; width: 100%; padding: 12px; text-align: center; background: #000; border-top: 1px solid #111; font-size: 12px; color: #555; }
 
-@keyframes glow { 0%, 100% { box-shadow: 0 0 5px var(--accent); } 50% { box-shadow: 0 0 20px var(--accent); } }
-@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-@keyframes slideUp { from { bottom: -50px; } to { bottom: 80px; } }
+/* মোডাল বাটন */
+.modal-actions-bottom { position: absolute; bottom: 20px; width: 90%; display: flex; gap: 10px; }
+.btn-save { flex: 2; background: var(--accent); color: #000; border: none; padding: 12px; border-radius: 10px; font-weight: bold; }
+.btn-del-modal { flex: 1; background: #ff4d4d; color: #fff; border: none; padding: 12px; border-radius: 10px; font-weight: bold; }
