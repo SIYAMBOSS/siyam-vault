@@ -9,80 +9,67 @@
 </head>
 <body>
 
-    <div id="login-screen">
-        <div class="login-card">
-            <div class="logo">🔐</div>
-            <h1 class="animated-text">Welcome Back</h1>
-            <input type="email" id="email" placeholder="Enter Your Gmail">
-            <input type="password" id="token" placeholder="Enter GitHub Token">
-            <button class="login-btn" onclick="login()">UNLOCK VAULT</button>
+    <header class="app-header" id="app-header">
+        <div class="nav-container">
+            <div class="tabs-center">
+                <span class="tab-item active" id="tab-photos" onclick="switchTab('photos')">Photos</span>
+                <span class="tab-item" id="tab-videos" onclick="switchTab('videos')">Videos</span>
+                <span class="tab-item" id="tab-albums" onclick="switchTab('albums')">Albums</span>
+            </div>
+            <span class="logout-btn" onclick="logout()">Logout</span>
         </div>
-    </div>
+    </header>
 
-    <div id="gallery-container" class="hidden">
-        <header class="app-header">
-            <div class="nav-top">
-                <div class="tabs">
-                    <span class="tab-item active" onclick="switchTab('photos')">PHOTOS</span>
-                    <span class="tab-item" onclick="switchTab('videos')">VIDEOS</span>
-                    <span class="tab-item" onclick="switchTab('folders')">FOLDERS</span>
-                </div>
-                <span class="logout-icon" onclick="logout()">Logout</span>
-            </div>
-        </header>
+    <main id="main-content">
+        <div id="media-display-section">
+            <div id="media-grid"></div>
+        </div>
 
-        <div id="folders-section" class="content-section hidden">
-            <div id="folder-controls">
+        <div id="albums-section" class="hidden">
+            <div class="album-actions">
                 <button class="create-folder-btn" onclick="createNewFolder()">+ Create New Event</button>
-            </div>
-            <div id="folder-back-nav" class="hidden">
-                <button class="back-btn" onclick="backToFolders()">← Back</button>
-                <h3 id="current-folder-name"></h3>
             </div>
             <div id="folder-grid" class="grid-3"></div>
         </div>
 
-        <div id="main-gallery" class="content-section">
-            <div id="media-grid"></div>
-        </div>
-
-        <input type="file" id="file-input" hidden multiple onchange="uploadFiles()">
-        <div class="fab" onclick="document.getElementById('file-input').click()">+</div>
-    </div>
-
-    <div id="delete-confirm-popup" class="modal hidden">
-        <div class="modal-overlay" onclick="closeDeletePopup()"></div>
-        <div class="delete-card">
-            <div class="delete-icon">⚠️</div>
-            <h3>Permanently Delete?</h3>
-            <p>এই ফাইলটি কি স্থায়ীভাবে মুছে ফেলতে চান?</p>
-            <div class="delete-actions">
-                <button class="btn-cancel" onclick="closeDeletePopup()">Cancel</button>
-                <button class="btn-confirm-delete" onclick="executePermanentDelete()">Delete</button>
+        <div id="folder-inner-view" class="hidden">
+            <div class="event-header">
+                <button class="back-btn" onclick="backToFolders()"><span>←</span> BACK</button>
+                <h3 id="current-folder-title">Event Name</h3>
             </div>
+            <div class="upload-options">
+                <div class="upload-card" onclick="triggerUpload('photo')">🖼️<p>Add Photo</p></div>
+                <div class="upload-card" onclick="triggerUpload('video')">🎥<p>Add Video</p></div>
+            </div>
+            <div id="event-media-grid"></div>
         </div>
+    </main>
+
+    <div id="floating-filter" class="filter-bar">
+        <div class="filter-item active" onclick="filterMedia('all')">
+            <span id="all-count" class="count-badge">0</span> All
+        </div>
+        <div class="filter-item" id="specific-filter" onclick="filterMedia('specific')">Camera</div>
     </div>
+
+    <footer id="gallery-footer">
+        <p id="total-count">0 Items</p>
+    </footer>
 
     <div id="modal" class="modal hidden">
         <div class="modal-overlay" onclick="closeModal()"></div>
         <div class="modal-body">
-            <span class="close-btn" onclick="closeModal()">❌</span>
+            <span class="close-btn-top" onclick="closeModal()">✕</span>
             <div id="modal-content"></div>
-            <div class="modal-actions">
-                <button class="btn-dl" onclick="downloadOriginal()">Download</button>
-                <button class="btn-del" onclick="deleteFile()">Delete</button>
+            <div class="modal-actions-bottom">
+                <button class="btn-save" onclick="downloadOriginal()">SAVE TO PHONE</button>
+                <button class="btn-del-modal" onclick="deleteFile()">DELETE</button>
             </div>
         </div>
     </div>
 
-    <div id="upload-popup" class="upload-popup hidden">
-        <div class="popup-content">
-            <div class="spinner"></div>
-            <p id="upload-status">Uploading...</p>
-            <div class="progress-bar-bg"><div id="progress-bar" class="progress-bar"></div></div>
-        </div>
-    </div>
-
+    <input type="file" id="file-input" hidden multiple onchange="uploadFiles()">
+    
     <script src="script.js"></script>
 </body>
 </html>
