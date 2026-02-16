@@ -1,8 +1,9 @@
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-body { font-family: 'Poppins', sans-serif; background: #0b0b1a; scroll-behavior: smooth; }
-.glass-input { width: 100%; padding: 16px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; color: #fff; outline: none; }
-.menu-link { @apply w-full flex items-center p-4 text-[9px] font-black tracking-widest text-white/40 border-b border-white/5; }
+.menu-link { @apply w-full flex items-center p-4 text-[9px] font-black tracking-widest text-white/40 border-b border-white/5 transition-all; }
 .menu-link.active { @apply text-cyan-400 bg-cyan-500/10 border-r-4 border-cyan-500; }
-.media-item { aspect-ratio: 3/4; @apply relative overflow-hidden bg-white/5 rounded-xl; }
-.action-btn { @apply w-14 h-14 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-xl; }
-::-webkit-scrollbar { width: 0; }
+
+.media-item { aspect-ratio: 3/4; @apply relative overflow-hidden bg-white/5 rounded-lg; }
+.fade-in { animation: fadeIn 0.8s ease-out forwards; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.action-btn { @apply w-14 h-14 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-sm; }
+.action-btn-love { @apply w-14 h-14 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-xl text-white transition-all; }
