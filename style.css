@@ -1,11 +1,51 @@
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: sans-serif; -webkit-tap-highlight-color: transparent; }
+/* General Reset */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
+body {
+    -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
+}
+
+/* Auth Section Styling */
+#auth-box {
+    transition: all 0.5s ease;
+}
+
+#auth-box input::placeholder {
+    color: #a1a1aa;
+    font-weight: 500;
+}
+
+#auth-box input:focus {
+    background-color: #fff;
+    box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.1);
+}
+
+/* Social Icons Animation */
+.fa-brands {
+    transition: transform 0.3s ease;
+}
+
+.flex > div:hover .fa-brands {
+    transform: scale(1.2);
+}
+
+/* Dashboard Styling */
+#dash {
+    background-color: #000;
+}
+
+/* Media Grid Item */
 .grid-item {
     position: relative;
     width: 100%;
     aspect-ratio: 1/1;
-    background-color: #050505;
+    background-color: #0a0a0a;
     overflow: hidden;
     border: 0.1px solid #111;
 }
@@ -17,26 +57,63 @@ img, video {
     display: block;
 }
 
+/* Floating Save Button */
 .save-btn {
     position: absolute;
     top: 10px;
     right: 10px;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     color: #fff;
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 10;
-    border: 1px solid rgba(255,255,255,0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
 }
 
-.fade-in { animation: fadeIn 0.8s ease-in-out; }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.save-btn:active {
+    transform: scale(0.9);
+}
 
-.hidden { display: none !important; }
+/* Animations */
+.fade-in {
+    animation: fadeIn 0.8s ease-out forwards;
+}
 
-/* Custom Scroll */
-::-webkit-scrollbar { width: 0px; }
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Custom Scrollbar for Gallery */
+::-webkit-scrollbar {
+    width: 0px;
+}
+
+/* Loading Pulse Animation */
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 0.5; }
+}
+
+/* Smooth Navigation Switch */
+nav button {
+    transition: all 0.3s ease;
+    letter-spacing: 1px;
+}
