@@ -1,52 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SIYAM VAULT PRO</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Siyam Vault</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-[#0b0b1a] text-white overflow-hidden">
+<body>
 
-    <div id="auth-box" class="flex items-center justify-center min-h-screen p-6 relative z-[600]">
-        <div class="bg-white/5 backdrop-blur-3xl p-10 rounded-[40px] border border-white/10 text-center w-full max-w-sm shadow-2xl">
-            <h1 class="text-2xl font-black italic text-cyan-500 mb-10 tracking-[0.2em] uppercase">SIYAM VAULT</h1>
-            
-            <div class="space-y-4">
-                <input type="email" id="u-email" placeholder="GMAIL ADDRESS" class="box-input">
-                <input type="password" id="u-token" placeholder="GITHUB TOKEN" class="box-input">
+    <div id="login-container">
+        <h2>Siyam Vault Login</h2>
+        <input type="email" id="email" placeholder="Gmail Address">
+        <input type="password" id="token" placeholder="GitHub Token">
+        <button onclick="login()">Login</button>
+    </div>
+
+    <div id="gallery-container" class="hidden">
+        <header>
+            <h2 id="user-title">My Vault</h2>
+            <div class="controls">
+                <input type="file" id="file-input" style="display:none" onchange="uploadFile()">
+                <button onclick="document.getElementById('file-input').click()">Upload Photo/Video</button>
+                <button class="logout-btn" onclick="logout()">Logout</button>
             </div>
-
-            <button onclick="handleLogin()" class="w-full mt-10 py-4 bg-cyan-600 rounded-2xl font-black uppercase text-[10px] tracking-[0.5em] active:scale-95 transition-all shadow-lg shadow-cyan-500/20">Unlock Archive</button>
-        </div>
-    </div>
-
-    <div id="dash" class="hidden relative z-10 w-full h-screen overflow-y-auto">
-        <header class="flex justify-between items-center px-6 py-6 border-b border-white/5 sticky top-0 bg-[#0b0b1a]/90 backdrop-blur-md z-[100]">
-            <h2 class="text-[10px] font-black text-cyan-400 tracking-[0.3em]">SIYAM VAULT</h2>
-            <button onclick="logout()" class="text-[9px] font-black text-red-500 border border-red-500/20 px-4 py-1 rounded-full">LOGOUT</button>
         </header>
-
-        <div class="w-full h-[260px] flex items-center justify-center overflow-hidden bg-gradient-to-b from-cyan-900/10 to-transparent">
-            <div id="carousel-3d" class="carousel-3d"></div>
-        </div>
-
-        <div class="flex justify-center gap-10 mb-8 mt-4">
-            <button onclick="switchTab('photos')" id="tab-photos" class="nav-tab active">PHOTOS</button>
-            <button onclick="switchTab('videos')" id="tab-videos" class="nav-tab">VIDEOS</button>
-            <button onclick="switchTab('favorites')" id="tab-favorites" class="nav-tab text-red-400">FAV</button>
-        </div>
-
-        <div id="gallery" class="grid grid-cols-2 md:grid-cols-4 gap-2 p-2 pb-40 min-h-screen"></div>
+        <div id="media-grid" class="grid"></div>
     </div>
 
-    <label id="upload-fab" class="hidden fixed bottom-8 right-8 w-16 h-16 bg-cyan-600 rounded-full flex items-center justify-center shadow-2xl z-[150] border border-white/20 active:scale-90 transition-all cursor-pointer">
-        <i class="fa-solid fa-plus text-2xl"></i>
-        <input type="file" id="file-input" class="hidden" multiple onchange="handleUpload(this)">
-    </label>
+    <div id="modal" class="modal hidden" onclick="closeModal()">
+        <span class="close">&times;</span>
+        <div id="modal-content"></div>
+        <div class="modal-actions">
+            <a id="download-btn" download>Download</a>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
