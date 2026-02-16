@@ -1,16 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600;900&display=swap');
-* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
-body { font-family: 'Poppins', sans-serif; background: #0b0b1a; }
-
-.glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); }
-.glass-input { width: 100%; padding: 18px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; color: #fff; outline: none; transition: 0.3s; }
-.glass-input:focus { border-color: #06b6d4; background: rgba(255, 255, 255, 0.05); }
-
-.menu-link { @apply w-full flex items-center gap-4 p-4 text-[10px] font-black tracking-widest text-white/40 rounded-2xl transition-all; }
-.menu-link.active { @apply bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shadow-[0_0_20px_rgba(6,182,212,0.1)]; }
-
-.media-item { @apply relative overflow-hidden bg-white/5 rounded-xl transition-all duration-500; aspect-ratio: 3/4; }
-.action-btn { @apply w-16 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-xl active:scale-90 transition-all; }
-
-#dash { scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body { font-family: 'Poppins', sans-serif; background: #0b0b1a; scroll-behavior: smooth; }
+.glass-input { width: 100%; padding: 16px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; color: #fff; outline: none; }
+.menu-link { @apply w-full flex items-center p-4 text-[9px] font-black tracking-widest text-white/40 border-b border-white/5; }
+.menu-link.active { @apply text-cyan-400 bg-cyan-500/10 border-r-4 border-cyan-500; }
+.media-item { aspect-ratio: 3/4; @apply relative overflow-hidden bg-white/5 rounded-xl; }
+.action-btn { @apply w-14 h-14 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-xl; }
 ::-webkit-scrollbar { width: 0; }
