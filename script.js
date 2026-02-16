@@ -1,87 +1,77 @@
 const GITHUB_USER = "SIYAMBOSS";
 const REPO_NAME = "siyam-vault";
-const BRANCH = "main"; 
 
 function login() {
     const email = document.getElementById('email').value;
     const token = document.getElementById('token').value;
-
-    if (email.includes('@gmail.com') && token.length > 10) {
+    if (email === "sadaf245sz@gmail.com" && token.length > 5) {
         localStorage.setItem('gh_token', token);
-        localStorage.setItem('user_email', email);
-        loadGallery();
-    } else {
-        alert("Sothik Gmail o Token din!");
-    }
+        showGallery();
+    } else { alert("Wrong details!"); }
 }
 
-async function loadGallery() {
-    const token = localStorage.getItem('gh_token');
-    const email = localStorage.getItem('user_email');
-    if (!token) return;
-
-    document.getElementById('login-container').classList.add('hidden');
+function showGallery() {
+    document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('gallery-container').classList.remove('hidden');
-    document.getElementById('user-title').innerText = `${email.split('@')[0]}'s Vault`;
+    loadMedia();
+}
 
+async function loadMedia() {
+    const token = localStorage.getItem('gh_token');
     const url = `https://api.github.com/repos/${GITHUB_USER}/${REPO_NAME}/contents/`;
     
     try {
-        const response = await fetch(url, { headers: { 'Authorization': `token ${token}` } });
-        const files = await response.json();
+        const res = await fetch(url, { headers: { 'Authorization': `token ${token}` } });
+        const data = await res.json();
         const grid = document.getElementById('media-grid');
         grid.innerHTML = '';
-
-        files.forEach(file => {
+        
+        let count = 0;
+        data.forEach(file => {
             if (file.name.match(/\.(jpg|jpeg|png|gif|mp4|webm)$/i)) {
+                count++;
                 const isVideo = file.name.match(/\.(mp4|webm)$/i);
-                const element = document.createElement(isVideo ? 'video' : 'img');
-                element.src = file.download_url;
-                element.onclick = (e) => { e.stopPropagation(); openModal(file.download_url, isVideo); };
-                grid.appendChild(element);
+                const el = document.createElement(isVideo ? 'video' : 'img');
+                el.src = file.download_url;
+                el.onclick = () => openModal(file.download_url, isVideo);
+                grid.appendChild(el);
             }
         });
-    } catch (err) { alert("Error loading files!"); }
+        document.getElementById('file-count').innerText = `${count} photos and videos`;
+    } catch (e) { alert("Error loading vault!"); }
 }
 
 async function uploadFile() {
     const fileInput = document.getElementById('file-input');
     const token = localStorage.getItem('gh_token');
-    if (fileInput.files.length === 0) return;
+    if (!fileInput.files[0]) return;
 
     const file = fileInput.files[0];
     const reader = new FileReader();
-    
     reader.onload = async () => {
         const content = reader.result.split(',')[1];
-        const url = `https://api.github.com/repos/${GITHUB_USER}/${REPO_NAME}/contents/${Date.now()}_${file.name}`;
+        const path = `${Date.now()}_${file.name}`;
+        const url = `https://api.github.com/repos/${GITHUB_USER}/${REPO_NAME}/contents/${path}`;
         
-        const response = await fetch(url, {
+        const res = await fetch(url, {
             method: 'PUT',
-            headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: "Upload from Web", content: content, branch: BRANCH })
+            headers: { 'Authorization': `token ${token}` },
+            body: JSON.stringify({ message: "upload", content: content })
         });
-
-        if (response.ok) { alert("Upload Successful!"); loadGallery(); }
-        else { alert("Upload Failed!"); }
+        if (res.ok) { loadMedia(); } else { alert("Upload failed!"); }
     };
     reader.readAsDataURL(file);
 }
 
 function openModal(url, isVideo) {
-    const modal = document.getElementById('modal');
     const content = document.getElementById('modal-content');
-    content.innerHTML = isVideo ? `<video src="${url}" controls autoplay></video>` : `<img src="${url}">`;
+    content.innerHTML = isVideo ? `<video src="${url}" controls autoplay style="width:100%"></video>` : `<img src="${url}" style="width:100%">`;
     document.getElementById('download-btn').href = url;
-    modal.classList.remove('hidden');
+    document.getElementById('modal').classList.remove('hidden');
 }
 
 function closeModal() { document.getElementById('modal').classList.add('hidden'); }
 
-function logout() {
-    localStorage.clear();
-    location.reload();
-}
+function logout() { localStorage.clear(); location.reload(); }
 
-// Auto-load if already logged in
-if (localStorage.getItem('gh_token')) { loadGallery(); }
+if (localStorage.getItem('gh_token')) showGallery();
