@@ -12,54 +12,47 @@
 <body class="bg-[#0b0b1a] text-white overflow-hidden">
 
     <div id="auth-box" class="flex items-center justify-center min-h-screen p-6 relative z-[600]">
-        <div class="bg-white/5 backdrop-blur-3xl p-10 rounded-[40px] border border-white/10 text-center w-full max-w-sm shadow-2xl">
-            <img src="logo.png" class="w-16 h-16 mx-auto mb-6 rounded-2xl shadow-lg border border-cyan-500/20">
-            <h1 class="text-2xl font-black italic text-cyan-500 mb-10 tracking-widest">ZERODAY VAULT</h1>
-            
+        <div class="bg-[#161b22] p-10 rounded-[40px] border border-white/10 text-center w-full max-w-sm shadow-2xl">
+            <h1 class="text-2xl font-black italic text-cyan-500 mb-10 tracking-widest uppercase">ZeroDay Vault</h1>
             <div class="space-y-4">
-                <div class="premium-box"><input type="email" id="u-email" placeholder="GMAIL ADDRESS" class="box-input"></div>
-                <div class="premium-box"><input type="password" id="u-token" placeholder="GITHUB TOKEN" class="box-input"></div>
-                
-                <div class="pt-6">
-                    <p class="text-[8px] text-cyan-400 font-bold mb-4 uppercase tracking-[0.3em]">Master Security Key</p>
-                    <div class="premium-box flex items-center mb-4">
-                        <input type="password" id="u-key" placeholder="CREATE PASSWORD" class="box-input flex-1">
-                        <i class="fa-solid fa-eye text-white/20 px-3 cursor-pointer" onclick="togglePass('u-key', this)"></i>
-                    </div>
-                    <div class="premium-box flex items-center">
-                        <input type="password" id="u-key-conf" placeholder="CONFIRM PASSWORD" class="box-input flex-1">
-                        <i class="fa-solid fa-eye text-white/20 px-3 cursor-pointer" onclick="togglePass('u-key-conf', this)"></i>
-                    </div>
+                <input type="text" id="u-email" placeholder="GMAIL ADDRESS" class="box-input">
+                <input type="password" id="u-token" placeholder="GITHUB TOKEN" class="box-input">
+                <div class="pt-4 border-t border-white/5">
+                    <p class="text-[8px] text-cyan-400 font-bold mb-2 tracking-[0.3em]">MASTER SECURITY KEY</p>
+                    <input type="password" id="u-key" placeholder="PASSWORD" class="box-input">
                 </div>
             </div>
-
-            <button onclick="handleLogin()" class="w-full mt-10 py-4 bg-cyan-600 rounded-2xl font-black uppercase text-[10px] tracking-[0.5em] active:scale-95 transition-all shadow-lg">Unlock Archive</button>
+            <button onclick="handleLogin()" class="w-full mt-10 py-4 bg-cyan-600 rounded-2xl font-black uppercase text-[10px] tracking-[0.5em] active:scale-95 transition-all">Unlock Archive</button>
         </div>
     </div>
 
     <div id="dash" class="hidden relative z-10 w-full h-screen overflow-y-auto">
         <header class="flex justify-between items-center px-6 py-4 border-b border-white/5 bg-[#0b0b1a]/90 backdrop-blur-xl sticky top-0 z-[100]">
             <button onclick="toggleSidebar()" class="text-xl text-cyan-500"><i class="fa-solid fa-bars-staggered"></i></button>
-            <h2 id="current-tab-title" class="text-[9px] font-black italic text-cyan-500 tracking-widest uppercase">PHOTOS</h2>
-            <button onclick="logout()" class="text-[9px] font-black text-red-500 border border-red-500/20 px-4 py-1 rounded-full">Logout</button>
+            <h2 id="current-tab-title" class="text-[9px] font-black text-cyan-500 tracking-widest">PHOTOS</h2>
+            <button onclick="logout()" class="text-[9px] font-black text-red-500 px-4 py-2 border border-red-500/20 rounded-full">Logout</button>
         </header>
 
-        <div id="gallery" class="grid grid-cols-2 md:grid-cols-4 gap-1 p-1 pb-40 min-h-screen"></div>
+        <div id="three-view" class="w-full h-[250px] flex items-center justify-center overflow-hidden">
+            <div id="carousel-3d" class="carousel-3d"></div>
+        </div>
+
+        <div id="gallery" class="grid grid-cols-2 md:grid-cols-4 gap-1 p-1 pb-40"></div>
     </div>
 
-    <div id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-[#0b0b1a]/98 z-[500] transform -translate-x-full transition-all duration-500 border-r border-cyan-500/20 shadow-2xl backdrop-blur-xl">
+    <div id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-[#0b0b1a]/98 z-[500] transform -translate-x-full transition-all duration-300 border-r border-cyan-500/20 shadow-2xl backdrop-blur-xl">
         <div class="p-8 h-full flex flex-col">
             <h2 class="text-xs font-black text-cyan-500 mb-10 tracking-widest">SIYAMBOSS</h2>
             <nav class="space-y-2 flex-1">
-                <button onclick="switchTab('photos')" class="menu-link active" id="btn-photos"><i class="fa-solid fa-image"></i> PHOTOS</button>
-                <button onclick="switchTab('videos')" class="menu-link" id="btn-videos"><i class="fa-solid fa-video"></i> VIDEOS</button>
-                <button onclick="switchTab('favorites')" class="menu-link" id="btn-favorites"><i class="fa-solid fa-heart text-red-500"></i> FAVORITES</button>
-                <button onclick="switchTab('trash')" class="menu-link text-red-400" id="btn-trash"><i class="fa-solid fa-trash-can"></i> TRASH BIN</button>
+                <button onclick="switchTab('photos')" class="menu-link active"><i class="fa-solid fa-image"></i> PHOTOS</button>
+                <button onclick="switchTab('videos')" class="menu-link"><i class="fa-solid fa-video"></i> VIDEOS</button>
+                <button onclick="switchTab('favorites')" class="menu-link"><i class="fa-solid fa-heart text-red-500"></i> FAVORITES</button>
+                <button onclick="switchTab('trash')" class="menu-link text-red-400"><i class="fa-solid fa-trash-can"></i> TRASH BIN</button>
             </nav>
         </div>
     </div>
 
-    <label id="upload-fab" class="hidden fixed bottom-8 right-8 w-16 h-16 bg-cyan-600 rounded-full flex items-center justify-center shadow-2xl z-[150] border border-white/20 active:scale-90 transition-all cursor-pointer">
+    <label id="upload-fab" class="hidden fixed bottom-8 right-8 w-16 h-16 bg-cyan-600 rounded-full flex items-center justify-center shadow-2xl z-[150] cursor-pointer">
         <i class="fa-solid fa-plus text-2xl"></i>
         <input type="file" id="file-input" class="hidden" multiple onchange="handleUpload(this)">
     </label>
