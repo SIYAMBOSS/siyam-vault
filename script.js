@@ -27,28 +27,34 @@ async function load(type) {
     document.getElementById('btn-photos').className = type === 'photos' ? "text-blue-500 font-bold border-b-2 border-blue-500 pb-1 text-xs" : "text-zinc-500 font-bold pb-1 text-xs";
     document.getElementById('btn-videos').className = type === 'videos' ? "text-blue-500 font-bold border-b-2 border-blue-500 pb-1 text-xs" : "text-zinc-500 font-bold pb-1 text-xs";
     
-    box.innerHTML = '<div class="col-span-3 py-20 text-center opacity-30"><i class="fa-solid fa-spinner fa-spin text-2xl"></i></div>';
+    box.innerHTML = '<div class="col-span-3 py-20 text-center opacity-30 animate-pulse text-xs">Syncing...</div>';
 
     try {
-        const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/vault/${email}/${type}?v=${Date.now()}`, {
+        // ফোল্ডার পাথ vault/gmail/type অনুযায়ী চেক হবে
+        const url = `https://api.github.com/repos/${owner}/${repo}/contents/vault/${email}/${type}?v=${Date.now()}`;
+        const res = await fetch(url, {
             headers: { 'Authorization': `token ${token}` }
         });
 
         if(res.ok) {
             const files = await res.json();
-            box.innerHTML = files.reverse().map(f => `
-                <div>
-                    ${type === 'photos' ? 
-                        `<img src="${f.download_url}?v=${Date.now()}" loading="lazy">` : 
-                        `<video src="${f.download_url}" controls class="w-full"></video>`
-                    }
-                </div>
-            `).join('');
+            if(files.length > 0) {
+                box.innerHTML = files.reverse().map(f => `
+                    <div class="grid-item">
+                        ${type === 'photos' ? 
+                            `<img src="${f.download_url}?v=${Date.now()}" loading="lazy" onerror="this.src='https://placehold.co/400x400/000000/3b82f6?text=Error'">` : 
+                            `<video src="${f.download_url}" controls class="w-full h-full"></video>`
+                        }
+                    </div>
+                `).join('');
+            } else {
+                box.innerHTML = '<p class="col-span-3 text-center py-20 text-zinc-800 text-xs">NO FILES FOUND</p>';
+            }
         } else {
-            box.innerHTML = '<p class="col-span-3 text-center py-20 text-zinc-800 text-xs">FOLDER EMPTY</p>';
+            box.innerHTML = '<p class="col-span-3 text-center py-20 text-red-900 text-xs uppercase font-bold">Check Folder Structure</p>';
         }
     } catch (err) { 
-        box.innerHTML = '<p class="col-span-3 text-center py-20 text-red-900 text-xs">CONNECTION ERROR</p>'; 
+        box.innerHTML = '<p class="col-span-3 text-center py-20 text-red-500">NETWORK ERROR</p>'; 
     }
 }
 
@@ -65,13 +71,13 @@ async function upload(input) {
             const type = file.type.startsWith('image') ? 'photos' : 'videos';
             const name = Date.now() + "_" + file.name.replace(/\s+/g, '_');
 
-            await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/vault/${email}/${type}/${name}`, {
+            const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/vault/${email}/${type}/${name}`, {
                 method: 'PUT',
                 headers: { 'Authorization': `token ${token}` },
                 body: JSON.stringify({ message: "upload", content: content })
             });
             if(file === files[files.length-1]) {
-                alert("Upload Done!");
+                alert("Upload Finished!");
                 load(type);
             }
         };
