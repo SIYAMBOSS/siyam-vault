@@ -5,33 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Siyam Vault</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <div id="login-container">
-        <h2>Siyam Vault Login</h2>
-        <input type="email" id="email" placeholder="Gmail Address">
-        <input type="password" id="token" placeholder="GitHub Token">
-        <button onclick="login()">Login</button>
+    <div id="login-screen">
+        <div class="login-card">
+            <h1>Welcome Back</h1>
+            <p class="subtitle">Sign in to continue</p>
+            <input type="email" id="email" placeholder="sadaf245sz@gmail.com">
+            <input type="password" id="token" placeholder="GitHub Token">
+            <button class="login-btn" onclick="login()">LOGIN</button>
+        </div>
     </div>
 
     <div id="gallery-container" class="hidden">
-        <header>
-            <h2 id="user-title">My Vault</h2>
-            <div class="controls">
-                <input type="file" id="file-input" style="display:none" onchange="uploadFile()">
-                <button onclick="document.getElementById('file-input').click()">Upload Photo/Video</button>
-                <button class="logout-btn" onclick="logout()">Logout</button>
+        <div class="top-nav">
+            <span class="search-icon">🔍</span>
+            <div class="tabs">
+                <span class="active">Photos</span>
+                <span>Albums</span>
             </div>
-        </header>
-        <div id="media-grid" class="grid"></div>
+            <span class="menu-icon" onclick="logout()">⋮</span>
+        </div>
+
+        <div class="stats-bar">
+            <span id="file-count">Loading...</span>
+        </div>
+
+        <div class="date-header">Yesterday</div>
+
+        <div id="media-grid" class="grid">
+            </div>
+
+        <input type="file" id="file-input" hidden onchange="uploadFile()">
+        <div class="fab" onclick="document.getElementById('file-input').click()">+</div>
     </div>
 
-    <div id="modal" class="modal hidden" onclick="closeModal()">
-        <span class="close">&times;</span>
-        <div id="modal-content"></div>
-        <div class="modal-actions">
-            <a id="download-btn" download>Download</a>
+    <div id="modal" class="modal hidden">
+        <div class="modal-overlay" onclick="closeModal()"></div>
+        <div class="modal-body">
+            <div id="modal-content"></div>
+            <div class="modal-footer">
+                <a id="download-btn" download>Download</a>
+                <span onclick="closeModal()" style="color: white; cursor: pointer;">Close</span>
+            </div>
         </div>
     </div>
 
