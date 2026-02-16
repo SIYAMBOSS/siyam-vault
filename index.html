@@ -3,61 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SIYAM VAULT PRO</title>
+    <title>ZeroDay Vault</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-[#0b0b1a] text-white overflow-hidden">
 
-    <div id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-[#0b0b1a] z-[500] transform -translate-x-full transition-transform duration-300 border-r border-white/10 shadow-2xl">
-        <div class="p-6">
-            <h2 class="text-xl font-black italic text-purple-500 mb-10">MENU</h2>
-            <nav class="space-y-6">
-                <button onclick="switchTab('photos')" class="menu-link"><i class="fa-solid fa-image"></i> Photos</button>
-                <button onclick="switchTab('videos')" class="menu-link"><i class="fa-solid fa-video"></i> Videos</button>
-                <button onclick="switchTab('favorites')" class="menu-link"><i class="fa-solid fa-heart"></i> Favorites</button>
-                <button onclick="switchTab('trash')" class="menu-link"><i class="fa-solid fa-trash-can"></i> Trash Bin</button>
-            </nav>
+    <div id="auth-box" class="flex items-center justify-center min-h-screen p-6 relative z-[600]">
+        <div class="bg-white/5 backdrop-blur-2xl p-10 rounded-[30px] border border-white/10 text-center w-full max-w-sm shadow-2xl">
+            <h1 class="text-2xl font-black italic text-purple-500 mb-8 tracking-[0.3em] uppercase">ZeroDay</h1>
+            <div class="space-y-3">
+                <input type="email" id="u-email" placeholder="GMAIL ADDRESS" class="box-input">
+                <input type="password" id="u-token" placeholder="GITHUB TOKEN" class="box-input">
+            </div>
+            <button onclick="handleLogin()" class="w-full mt-8 py-4 bg-purple-600 rounded-xl font-black uppercase text-[10px] tracking-[0.4em] active:scale-95 transition-all">Unlock</button>
         </div>
     </div>
 
     <div id="dash" class="hidden relative z-10 w-full h-screen overflow-y-auto">
-        <header class="flex justify-between items-center px-6 py-4 border-b border-white/5 bg-[#0b0b1a]/90 sticky top-0 z-[100]">
-            <div class="flex items-center gap-4">
-                <button onclick="toggleSidebar()" class="text-xl text-purple-500"><i class="fa-solid fa-bars-staggered"></i></button>
-                <div>
-                    <h2 class="text-lg font-black italic text-purple-500">DASHBOARD</h2>
-                    <p id="file-counter" class="text-[8px] text-white/40 font-bold uppercase tracking-widest">Loading...</p>
-                </div>
-            </div>
-            <button onclick="logout()" class="text-[10px] font-bold text-red-400 px-4 py-2 rounded-full bg-red-500/10">Logout</button>
+        <header class="flex justify-between items-center px-6 py-6 border-b border-white/5 sticky top-0 bg-[#0b0b1a]/90 backdrop-blur-md z-[100]">
+            <h2 class="text-[10px] font-black text-purple-400 tracking-[0.2em]">VAULT PRO</h2>
+            <button onclick="logout()" class="text-[8px] font-bold text-red-500 border border-red-500/20 px-3 py-1 rounded-full">LOGOUT</button>
         </header>
 
-        <div id="three-container" class="w-full h-[250px] bg-black/10"></div>
+        <div class="w-full h-[260px] flex items-center justify-center overflow-hidden bg-gradient-to-b from-purple-900/10 to-transparent">
+            <div id="carousel-3d" class="carousel-3d"></div>
+        </div>
+
+        <div class="flex justify-center gap-10 mb-8 mt-4">
+            <button onclick="switchTab('photos')" id="tab-photos" class="nav-tab active">PHOTOS</button>
+            <button onclick="switchTab('videos')" id="tab-videos" class="nav-tab">VIDEOS</button>
+            <button onclick="switchTab('favorites')" id="tab-favorites" class="nav-tab">FAV</button>
+        </div>
 
         <div id="gallery" class="grid grid-cols-2 md:grid-cols-4 gap-2 p-2 pb-40"></div>
     </div>
 
-    <div id="media-modal" class="hidden fixed inset-0 z-[600] bg-black/98 flex flex-col items-center">
-        <div class="w-full max-w-4xl flex justify-end p-4">
-            <button onclick="closeModal()" class="text-white bg-red-600/80 w-10 h-10 rounded-full flex items-center justify-center shadow-xl">
-                <i class="fa-solid fa-xmark text-xl"></i>
-            </button>
-        </div>
-        
-        <div id="modal-content" class="w-full max-w-4xl max-h-[70vh] flex justify-center items-center px-4 overflow-hidden"></div>
-        
-        <div class="flex gap-10 mt-8">
-            <button id="save-btn" class="action-btn text-emerald-400"><i class="fa-solid fa-download"></i> SAVE</button>
-            <button id="trash-btn" class="action-btn text-red-500"><i class="fa-solid fa-trash"></i> DELETE</button>
-        </div>
-    </div>
-
-    <label id="upload-fab" class="hidden fixed bottom-8 right-8 w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center cursor-pointer shadow-2xl z-[150] border border-white/20">
-        <i class="fa-solid fa-plus text-2xl text-white"></i>
+    <label id="upload-fab" class="hidden fixed bottom-8 right-8 w-14 h-14 bg-purple-600 rounded-full flex items-center justify-center shadow-2xl z-[150] active:scale-90 transition-all cursor-pointer">
+        <i class="fa-solid fa-plus text-xl"></i>
         <input type="file" id="file-input" class="hidden" multiple onchange="handleUpload(this)">
     </label>
 
