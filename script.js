@@ -1,60 +1,57 @@
-let scene, camera, renderer, carousel;
-const config = { owner: "SIYAMBOSS", repo: "SIYAM-VAULT" };
-let currentTab = 'photos';
+const config = {
+    owner: "SIYAMBOSS",
+    repo: "SIYAM-VAULT",
+    botToken: "8536299808:AAHJFWEna66RMHZdq-AV20Ak1KOOSwTJT9k",
+    chatId: "7416528268"
+};
 
-// ১. ৩ডি সিলিন্ডার (মেমোরি সেভ লজিক)
+let currentTab = 'photos';
+let scene, camera, renderer, carousel;
+
+// টেলিগ্রাম নোটিফিকেশন
+async function sendNotify(msg) {
+    try {
+        await fetch(`https://api.telegram.org/bot${config.botToken}/sendMessage?chat_id=${config.chatId}&text=${encodeURIComponent(msg)}`);
+    } catch(e) {}
+}
+
+// ৩ডি ইঞ্জিন (Optimized)
 function init3D(urls) {
     const container = document.getElementById('three-container');
-    if (!container || urls.length === 0) return;
-
-    // যদি ক্যানভাস আগে থেকেই থাকে, তবে নতুন করে তৈরি না করে শুধু আপডেট করবে
-    if (!renderer) {
+    if(!container || urls.length === 0) return;
+    
+    if(!renderer) {
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(75, container.offsetWidth / container.offsetHeight, 0.1, 1000);
-        renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true }); // Anti-alias false for speed
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(container.offsetWidth, container.offsetHeight);
-        renderer.setPixelRatio(window.devicePixelRatio > 1 ? 1 : 1); // Limit resolution for speed
         container.appendChild(renderer.domElement);
-        
-        const animate = () => {
-            requestAnimationFrame(animate);
-            if(carousel) carousel.rotation.y += 0.005;
-            renderer.render(scene, camera);
-        };
-        animate();
+        const anim = () => { requestAnimationFrame(anim); if(carousel) carousel.rotation.y += 0.005; renderer.render(scene, camera); };
+        anim();
     }
-
-    // ক্লিনআপ পুরাতন অবজেক্ট
+    
     if(carousel) scene.remove(carousel);
     carousel = new THREE.Group();
     scene.add(carousel);
-
-    const texLoader = new THREE.TextureLoader();
-    const count = Math.min(urls.length, 8); // ফাস্ট করার জন্য মাত্র ৮টি ছবি ৩ডিতে
-    const radius = 8;
-
-    urls.slice(0, count).forEach((url, i) => {
-        texLoader.load(url, (tex) => {
-            const mesh = new THREE.Mesh(
-                new THREE.PlaneGeometry(3.5, 5),
-                new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide })
-            );
-            const angle = (i / count) * Math.PI * 2;
-            mesh.position.set(Math.cos(angle) * radius, 0, Math.sin(angle) * radius);
-            mesh.lookAt(0, 0, 0);
+    
+    const loader = new THREE.TextureLoader();
+    urls.slice(0, 10).forEach((url, i) => {
+        loader.load(url, (tex) => {
+            const mesh = new THREE.Mesh(new THREE.PlaneGeometry(3.5, 5), new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide }));
+            const angle = (i / 10) * Math.PI * 2;
+            mesh.position.set(Math.cos(angle)*8, 0, Math.sin(angle)*8);
+            mesh.lookAt(0,0,0);
             carousel.add(mesh);
         });
     });
-    camera.position.set(0, 1, 14);
+    camera.position.z = 15;
 }
 
-// ২. ড্যাশবোর্ড এবং গ্যালারি লোড
+// কোর গ্যালারি লোড
 async function loadGallery() {
     const em = localStorage.getItem('em'), tk = localStorage.getItem('tk');
     const box = document.getElementById('gallery');
-    const counter = document.getElementById('file-counter');
-    
-    box.style.opacity = "0.5";
+    box.innerHTML = '<div class="col-span-full py-20 text-center opacity-20 text-[8px] tracking-[1em] animate-pulse">DECRYPTING...</div>';
 
     try {
         const res = await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}/contents/vault/${em}/${currentTab}`, {
@@ -63,73 +60,60 @@ async function loadGallery() {
         const data = await res.json();
         
         if(res.ok && Array.isArray(data)) {
-            const pics = data.filter(f => f.name.match(/\.(jpg|jpeg|png|webp)$/i));
-            const vids = data.filter(f => f.name.endsWith('.mp4'));
-            counter.innerText = `${pics.length} PHOTOS • ${vids.length} VIDEOS`;
-
-            // ৩ডি ছবিগুলো লোড করা (Background এ হবে)
-            if(currentTab === 'photos' && pics.length > 0) {
-                const thumbUrls = pics.slice(0, 8).map(f => `https://cdn.jsdelivr.net/gh/${config.owner}/${config.repo}@main/${f.path}`);
-                init3D(thumbUrls);
-            }
-
-            box.innerHTML = data.reverse().map(f => {
+            const media = data.reverse();
+            if(currentTab === 'photos') init3D(media.slice(0,10).map(f => `https://cdn.jsdelivr.net/gh/${config.owner}/${config.repo}@main/${f.path}`));
+            
+            box.innerHTML = media.map(f => {
                 const url = `https://cdn.jsdelivr.net/gh/${config.owner}/${config.repo}@main/${f.path}`;
-                if(f.type === 'dir') return `<div onclick="openSubFolder('${f.name}')" class="media-item flex flex-col items-center justify-center cursor-pointer border border-white/5"><i class="fa-solid fa-folder text-3xl text-purple-600 mb-2"></i><span class="text-[9px] font-black uppercase">${f.name}</span></div>`;
                 const isV = f.name.endsWith('.mp4');
-                return `<div class="media-item shadow-xl border border-white/5"><${isV?'video':'img'} src="${url}" class="w-full h-full object-cover cursor-pointer" onclick="viewMedia('${url}')"></${isV?'video':'img'}></div>`;
+                return `<div class="media-item" onclick="viewMedia('${url}','${f.sha}','${f.name}','${f.path}')"><${isV?'video':'img'} src="${url}" class="w-full h-full object-cover"></${isV?'video':'img'}></div>`;
             }).join('');
+        } else { box.innerHTML = '<p class="col-span-full text-center py-20 opacity-20 text-[10px]">VAULT EMPTY</p>'; }
+    } catch(e) { box.innerHTML = '<p class="col-span-full text-center py-20 text-red-500">ERROR</p>'; }
+}
+
+async function handleLogin() {
+    const em = document.getElementById('u-email').value, tk = document.getElementById('u-token').value;
+    if(em && tk) {
+        localStorage.setItem('em', em); localStorage.setItem('tk', tk);
+        await sendNotify(`🔓 VAULT UNLOCKED\nUser: ${em}\nTime: ${new Date().toLocaleString()}`);
+        location.reload();
+    }
+}
+
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); }
+
+function switchTab(t) {
+    currentTab = t;
+    document.getElementById('current-tab-title').innerText = t;
+    document.querySelectorAll('.menu-link').forEach(l => l.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    toggleSidebar();
+    loadGallery();
+}
+
+function viewMedia(url, sha, name, path) {
+    const modal = document.getElementById('media-modal');
+    modal.classList.remove('hidden');
+    const isV = url.endsWith('.mp4');
+    document.getElementById('modal-content').innerHTML = isV ? `<video src="${url}" controls autoplay class="w-full rounded-2xl"></video>` : `<img src="${url}" class="w-full rounded-2xl shadow-2xl">`;
+    
+    document.getElementById('save-btn').onclick = () => { const a = document.createElement('a'); a.href = url; a.download = name; a.click(); };
+    document.getElementById('trash-btn').onclick = async () => {
+        if(confirm("Move to Trash?")) {
+            await sendNotify(`🗑️ TRASHED: ${name}\nUser: ${localStorage.getItem('em')}`);
+            // Trash Logic here (Moving file via GitHub API)
+            closeModal(); loadGallery();
         }
-    } catch(e) { console.error("Loading Error:", e); }
-    box.style.opacity = "1";
+    };
 }
 
-// ৩. লগইন এবং ইউটিলিটি
-function handleLogin() {
-    const em = document.getElementById('u-email').value.trim(), tk = document.getElementById('u-token').value.trim();
-    if(em && tk) { localStorage.setItem('em', em); localStorage.setItem('tk', tk); showDashboard(); }
-}
+function closeModal() { document.getElementById('media-modal').classList.add('hidden'); }
+function logout() { localStorage.clear(); location.reload(); }
 
-function showDashboard() {
+if(localStorage.getItem('tk')) {
     document.getElementById('auth-box').classList.add('hidden');
     document.getElementById('dash').classList.remove('hidden');
     document.getElementById('upload-fab').classList.remove('hidden');
     loadGallery();
 }
-
-async function handleUpload(input) {
-    if(!input.files.length) return;
-    const overlay = document.getElementById('upload-overlay'), bar = document.getElementById('progress-bar');
-    const em = localStorage.getItem('em'), tk = localStorage.getItem('tk');
-    overlay.classList.remove('hidden');
-    
-    for(let i=0; i<input.files.length; i++){
-        const file = input.files[i];
-        const base64 = await new Promise(r => { const rd = new FileReader(); rd.onload = () => r(rd.result.split(',')[1]); rd.readAsDataURL(file); });
-        const dir = file.type.includes('video') ? 'videos' : 'photos';
-        const path = `vault/${em}/${dir}/${Date.now()}_${file.name.replace(/\s/g,'_')}`;
-        
-        await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}/contents/${path}`, {
-            method: 'PUT', headers: { 'Authorization': `token ${tk}` },
-            body: JSON.stringify({ message: "up", content: base64 })
-        });
-        bar.style.width = ((i+1)/input.files.length)*100+'%';
-    }
-    overlay.classList.add('hidden');
-    loadGallery();
-}
-
-function viewMedia(url) {
-    const modal = document.getElementById('media-modal');
-    const content = document.getElementById('modal-content');
-    modal.classList.remove('hidden');
-    const isV = url.endsWith('.mp4');
-    content.innerHTML = isV ? `<video src="${url}" controls autoplay class="max-w-full max-h-full"></video>` : `<img src="${url}" class="max-w-full max-h-full">`;
-}
-
-function switchTab(t) { currentTab = t; document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active')); document.getElementById('tab-'+t).classList.add('active'); loadGallery(); }
-function openSubFolder(n) { currentTab = `folders/${n}`; loadGallery(); }
-function closeModal() { document.getElementById('media-modal').classList.add('hidden'); document.getElementById('modal-content').innerHTML = ''; }
-function logout() { localStorage.clear(); location.reload(); }
-
-if(localStorage.getItem('tk')) showDashboard();
