@@ -13,11 +13,9 @@
         <div class="login-card">
             <div class="logo">🔐</div>
             <h1 class="animated-text">Welcome Back</h1>
-            <p class="subtitle">Sign in to Siyam Vault</p>
             <input type="email" id="email" placeholder="Enter Your Gmail">
             <input type="password" id="token" placeholder="Enter GitHub Token">
             <button class="login-btn" onclick="login()">UNLOCK VAULT</button>
-            <p class="footer-link">GitHub Token এর জন্য Admin Siyam এর কাছে নক দিন</p>
         </div>
     </div>
 
@@ -25,37 +23,43 @@
         <header class="app-header">
             <div class="nav-top">
                 <div class="tabs">
-                    <span class="tab-item active animated-text" onclick="switchTab('photos')">PHOTOS</span>
-                    <span class="tab-item animated-text" onclick="switchTab('videos')">VIDEOS</span>
-                    <span class="tab-item animated-text" onclick="switchTab('folders')">FOLDERS</span>
+                    <span class="tab-item active" onclick="switchTab('photos')">PHOTOS</span>
+                    <span class="tab-item" onclick="switchTab('videos')">VIDEOS</span>
+                    <span class="tab-item" onclick="switchTab('folders')">FOLDERS</span>
                 </div>
                 <span class="logout-icon" onclick="logout()">Logout</span>
             </div>
         </header>
 
-        <div class="slider-container">
-            <div id="carousel" class="carousel"></div>
-        </div>
-
-        <div id="folder-view" class="content-section hidden">
-            <button class="create-folder-btn" onclick="createNewFolder()">+ Create New Folder</button>
+        <div id="folders-section" class="content-section hidden">
+            <div id="folder-controls">
+                <button class="create-folder-btn" onclick="createNewFolder()">+ Create New Event</button>
+            </div>
+            <div id="folder-back-nav" class="hidden">
+                <button class="back-btn" onclick="backToFolders()">← Back</button>
+                <h3 id="current-folder-name"></h3>
+            </div>
             <div id="folder-grid" class="grid-3"></div>
         </div>
 
         <div id="main-gallery" class="content-section">
-            <div class="date-header animated-text">Recent Media</div>
-            <div id="media-grid" class="grid-3"></div>
+            <div id="media-grid"></div>
         </div>
 
         <input type="file" id="file-input" hidden multiple onchange="uploadFiles()">
         <div class="fab" onclick="document.getElementById('file-input').click()">+</div>
     </div>
 
-    <div id="upload-popup" class="upload-popup hidden">
-        <div class="popup-content">
-            <div class="spinner"></div>
-            <p id="upload-status">Uploading to Vault...</p>
-            <div class="progress-bar-bg"><div id="progress-bar" class="progress-bar"></div></div>
+    <div id="delete-confirm-popup" class="modal hidden">
+        <div class="modal-overlay" onclick="closeDeletePopup()"></div>
+        <div class="delete-card">
+            <div class="delete-icon">⚠️</div>
+            <h3>Permanently Delete?</h3>
+            <p>এই ফাইলটি কি স্থায়ীভাবে মুছে ফেলতে চান?</p>
+            <div class="delete-actions">
+                <button class="btn-cancel" onclick="closeDeletePopup()">Cancel</button>
+                <button class="btn-confirm-delete" onclick="executePermanentDelete()">Delete</button>
+            </div>
         </div>
     </div>
 
@@ -68,6 +72,14 @@
                 <button class="btn-dl" onclick="downloadOriginal()">Download</button>
                 <button class="btn-del" onclick="deleteFile()">Delete</button>
             </div>
+        </div>
+    </div>
+
+    <div id="upload-popup" class="upload-popup hidden">
+        <div class="popup-content">
+            <div class="spinner"></div>
+            <p id="upload-status">Uploading...</p>
+            <div class="progress-bar-bg"><div id="progress-bar" class="progress-bar"></div></div>
         </div>
     </div>
 
