@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Siyam Vault</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -21,7 +22,7 @@
 
     <main id="main-content">
         <div id="media-display-section">
-            <div id="media-grid"></div>
+            <div id="media-grid" class="grid-3"></div>
         </div>
 
         <div id="albums-section" class="hidden">
@@ -36,11 +37,19 @@
                 <button class="back-btn" onclick="backToFolders()">← Back</button>
                 <h3 id="current-folder-title"></h3>
             </div>
+            
             <div class="upload-options">
-                <div class="upload-card" onclick="triggerUpload('photo')">🖼️<p>Add Photo</p></div>
-                <div class="upload-card" onclick="triggerUpload('video')">🎥<p>Add Video</p></div>
+                <div class="upload-card" onclick="triggerUpload('photo')">
+                    <span class="icon">🖼️</span>
+                    <p>Add Photo</p>
+                </div>
+                <div class="upload-card" onclick="triggerUpload('video')">
+                    <span class="icon">🎥</span>
+                    <p>Add Video</p>
+                </div>
             </div>
-            <div id="event-media-grid"></div>
+            
+            <div id="event-media-grid" class="grid-3"></div>
         </div>
     </main>
 
@@ -48,26 +57,15 @@
         <div class="filter-item active" id="filter-all" onclick="filterMedia('all')">
             <span id="all-count" class="count-badge">0</span> All
         </div>
-        <div class="filter-item" id="filter-specific">Camera</div>
+        <div class="filter-item" id="filter-camera">Camera</div>
     </div>
 
     <footer id="gallery-footer">
         <p id="total-count">0 Items</p>
     </footer>
 
-    <div id="modal" class="modal hidden">
-        <div class="modal-overlay" onclick="closeModal()"></div>
-        <div class="modal-body">
-            <span class="close-btn-top" onclick="closeModal()">✕</span>
-            <div id="modal-content"></div>
-            <div class="modal-actions-bottom">
-                <button class="btn-save" onclick="downloadOriginal()">SAVE TO PHONE</button>
-                <button class="btn-del-modal" onclick="deleteFile()">DELETE</button>
-            </div>
-        </div>
-    </div>
-
     <input type="file" id="file-input" hidden multiple onchange="uploadFiles()">
+
     <script src="script.js"></script>
 </body>
 </html>
