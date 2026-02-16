@@ -3,43 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIYAM VAULT</title>
+    <title>SIYAM VAULT - SECURE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        body { background: #000; color: #fff; font-family: sans-serif; -webkit-tap-highlight-color: transparent; }
-        .grid-item { position: relative; width: 100%; aspect-ratio: 1/1; overflow: hidden; background: #0a0a0a; border: 0.1px solid #111; }
-        img, video { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
-        .save-btn { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.6); color: #fff; padding: 6px 10px; border-radius: 8px; font-size: 12px; z-index: 10; border: 0.5px solid rgba(255,255,255,0.2); }
-        .hidden { display: none !important; }
-    </style>
 </head>
-<body>
+<body class="bg-black text-white selection:bg-blue-600">
 
-    <div id="login-box" class="flex flex-col items-center justify-center min-h-screen p-6">
-        <h1 class="text-4xl font-black mb-8 italic text-blue-500 uppercase">Vault</h1>
+    <div id="auth-box" class="flex flex-col items-center justify-center min-h-screen p-6">
+        <h1 class="text-4xl font-black mb-8 italic text-blue-500 uppercase tracking-tighter">Vault Auth</h1>
         <div class="w-full max-w-xs space-y-4">
-            <input type="email" id="u-email" placeholder="Gmail" class="w-full p-4 bg-zinc-900 rounded-2xl outline-none border border-zinc-800">
-            <input type="password" id="u-token" placeholder="GitHub Token" class="w-full p-4 bg-zinc-900 rounded-2xl outline-none border border-zinc-800">
-            <button onclick="login()" class="w-full p-4 bg-blue-600 rounded-2xl font-black uppercase tracking-widest active:scale-95 transition-all shadow-lg">Enter</button>
+            <div id="auth-mode-title" class="text-center text-zinc-500 text-[10px] font-bold uppercase mb-2">Login to your account</div>
+            <input type="email" id="u-email" placeholder="Gmail (sadaf245sz@gmail.com)" class="w-full p-4 bg-zinc-900 rounded-2xl outline-none border border-zinc-800 focus:border-blue-600 transition-all">
+            <input type="password" id="u-token" placeholder="GitHub Token" class="w-full p-4 bg-zinc-900 rounded-2xl outline-none border border-zinc-800 focus:border-blue-600 transition-all">
+            <button id="main-auth-btn" onclick="handleAuth()" class="w-full p-4 bg-blue-600 rounded-2xl font-black uppercase shadow-lg active:scale-95 transition-all">Login</button>
+            <p class="text-center text-zinc-500 text-[10px] mt-4 uppercase font-bold">
+                <span id="toggle-text">Account নেই?</span> 
+                <button onclick="toggleAuthMode()" id="toggle-btn" class="text-blue-500 ml-1">Create One</button>
+            </p>
         </div>
     </div>
 
-    <div id="dash" class="hidden">
+    <div id="dash" class="hidden min-h-screen">
         <header class="p-6 flex justify-between items-center border-b border-zinc-900 sticky top-0 bg-black/95 backdrop-blur-md z-50">
-            <h2 class="text-xl font-bold italic text-blue-500">SIYAMBOSS</h2>
+            <h2 class="text-xl font-bold italic text-blue-500 uppercase">SIYAMBOSS</h2>
             <button onclick="logout()" class="text-red-500 text-[10px] font-bold uppercase border border-red-500/20 px-3 py-1 rounded-lg">Logout</button>
         </header>
-
-        <nav class="flex justify-center gap-10 p-6">
-            <button onclick="load('photos')" id="btn-photos" class="text-blue-500 font-bold border-b-2 border-blue-500 pb-1 uppercase text-xs">Photos</button>
-            <button onclick="load('videos')" id="btn-videos" class="text-zinc-500 font-bold pb-1 uppercase text-xs">Videos</button>
+        <nav class="flex justify-center gap-12 p-6">
+            <button onclick="load('photos')" id="btn-photos" class="text-blue-500 font-bold border-b-2 border-blue-500 pb-1 uppercase text-[10px]">Photos</button>
+            <button onclick="load('videos')" id="btn-videos" class="text-zinc-500 font-bold pb-1 uppercase text-[10px]">Videos</button>
         </nav>
-
         <div id="gallery" class="grid grid-cols-3 gap-0.5"></div>
-
         <label class="fixed bottom-8 right-8 w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center cursor-pointer shadow-2xl z-50 active:scale-90 transition-all">
-            <i class="fa-solid fa-cloud-arrow-up text-white text-2xl"></i>
+            <i class="fa-solid fa-plus text-white text-2xl"></i>
             <input type="file" id="file-up" class="hidden" multiple onchange="upload(this)">
         </label>
     </div>
