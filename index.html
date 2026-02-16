@@ -3,49 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIYAM VAULT V2</title>
+    <title>SIYAM VAULT PRO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-black text-white">
+<body class="bg-[#0b0b1a] text-white overflow-x-hidden">
 
-    <div id="auth-box" class="flex items-center justify-center min-h-screen p-4 z-[100] relative">
-        <div class="w-full max-w-sm bg-[#111] p-10 rounded-[40px] border border-white/5 shadow-2xl">
-            <h1 class="text-3xl font-black mb-1 text-center italic tracking-tighter text-emerald-500">SIYAM VAULT</h1>
-            <p class="text-zinc-500 text-[10px] text-center mb-8 uppercase tracking-[0.3em]">Advanced Cloud Storage</p>
+    <div class="fixed inset-0 z-0 bg-gradient-to-b from-[#0b0b1a] via-[#1a0b2e] to-[#050505]"><div id="stars"></div></div>
+
+    <div id="auth-box" class="relative z-50 flex items-center justify-center min-h-screen p-6">
+        <div class="glass-card w-full max-w-sm p-10 rounded-[40px] border border-white/10 text-center">
+            <h1 class="text-4xl font-black mb-1 italic tracking-tighter">SIYAM <span class="text-purple-500">VAULT</span></h1>
+            <p class="text-purple-300 text-[10px] mb-8 uppercase tracking-[0.2em]">Next-Gen Storage</p>
             <div class="space-y-4">
-                <input type="email" id="u-email" placeholder="Gmail Address" class="auth-input">
-                <input type="password" id="u-token" placeholder="GitHub Token" class="auth-input">
-                <button onclick="handleLogin()" class="w-full py-4 bg-emerald-500 text-black font-black rounded-2xl hover:bg-white transition-all uppercase text-xs">Unlock System</button>
+                <input type="email" id="u-email" placeholder="Gmail Address" class="glass-input">
+                <input type="password" id="u-token" placeholder="GitHub Token" class="glass-input">
+                <button onclick="handleLogin()" class="w-full py-4 bg-white text-[#1a0b2e] font-black rounded-2xl uppercase text-[11px] tracking-widest">Unlock</button>
             </div>
         </div>
     </div>
 
-    <div id="three-container" class="hidden relative w-full h-[350px] bg-[#050505] border-b border-white/5 z-0">
-        <p class="absolute top-4 left-1/2 -translate-x-1/2 text-[9px] uppercase tracking-[0.4em] text-zinc-600">3D Featured Gallery</p>
-    </div>
-
     <div id="dash" class="hidden relative z-10">
-        <div class="flex justify-center gap-6 py-6 bg-black sticky top-0 border-b border-white/5">
-            <button onclick="switchTab('photos')" id="tab-photos" class="tab-btn active">PHOTOS</button>
-            <button onclick="switchTab('videos')" id="tab-videos" class="tab-btn">VIDEOS</button>
-            <button onclick="switchTab('folders')" id="tab-folders" class="tab-btn">FOLDERS</button>
+        <header class="flex justify-between items-center px-6 py-4 border-b border-white/5 bg-[#0b0b1a]/50 backdrop-blur-xl sticky top-0 z-[100]">
+            <h2 class="text-lg font-black italic tracking-tighter text-purple-500">DASHBOARD</h2>
+            <button onclick="logout()" class="text-[9px] font-bold border border-red-500/30 text-red-400 px-4 py-2 rounded-full uppercase bg-red-500/5 hover:bg-red-500/20 transition-all">Logout</button>
+        </header>
+
+        <div id="three-container" class="w-full h-[380px] relative border-b border-white/5"></div>
+
+        <div class="sticky top-[60px] z-[90] bg-[#0b0b1a]/90 backdrop-blur-2xl border-b border-white/5">
+            <div class="flex justify-center gap-8 py-4">
+                <button onclick="switchTab('photos')" id="tab-photos" class="nav-tab active">PHOTOS</button>
+                <button onclick="switchTab('videos')" id="tab-videos" class="nav-tab">VIDEOS</button>
+                <button onclick="switchTab('folders')" id="tab-folders" class="nav-tab">FOLDERS</button>
+            </div>
+            <div id="folder-tools" class="hidden flex justify-between px-6 py-3 bg-white/5">
+                <button onclick="createNewFolder()" class="tool-btn border-emerald-500/20 text-emerald-400">NEW FOLDER</button>
+                <button id="move-btn" onclick="startMoveProcess()" class="hidden tool-btn border-blue-500/20 text-blue-400">MOVE SELECTED</button>
+            </div>
         </div>
 
-        <div id="gallery-container" class="p-2 pb-32">
-            <div id="gallery" class="grid grid-cols-2 md:grid-cols-4 gap-1"></div>
-        </div>
+        <div id="gallery" class="grid grid-cols-2 md:grid-cols-4 gap-1 p-1 pb-40"></div>
     </div>
 
-    <div id="media-modal" class="hidden fixed inset-0 z-[200] bg-black/98 flex flex-col items-center justify-center p-4">
-        <button onclick="closeModal()" class="absolute top-8 right-8 text-4xl">&times;</button>
-        <div id="modal-content" class="w-full max-w-2xl flex justify-center"></div>
+    <label id="upload-fab" class="hidden fixed bottom-8 right-8 w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center cursor-pointer shadow-[0_10px_30px_rgba(147,51,234,0.5)] z-[200] hover:scale-110 active:scale-95 transition-all border border-white/20">
+        <i class="fa-solid fa-cloud-arrow-up text-2xl text-white"></i>
+        <input type="file" id="file-input" class="hidden" multiple onchange="handleUpload(this)">
+    </label>
+
+    <div id="media-modal" class="hidden fixed inset-0 z-[300] bg-black/98 flex flex-col items-center justify-center p-4">
+        <div id="modal-content" class="w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl"></div>
         <div class="flex gap-4 mt-8">
-            <button id="dl-btn" class="action-btn text-emerald-400"><i class="fa-solid fa-download"></i> Save to Phone</button>
-            <button id="del-btn" class="action-btn text-red-500"><i class="fa-solid fa-trash"></i> Delete</button>
+            <button id="dl-btn" class="action-btn text-emerald-400"><i class="fa-solid fa-download"></i> SAVE</button>
+            <button id="del-btn" class="action-btn text-red-500"><i class="fa-solid fa-trash"></i> DELETE</button>
+            <button onclick="closeModal()" class="action-btn text-zinc-500">BACK</button>
         </div>
     </div>
 
