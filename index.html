@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Siyam Vault</title>
+    <title>Siyam Vault Pro</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -16,7 +16,7 @@
                 <span class="tab-item" id="tab-videos" onclick="switchTab('videos')">Videos</span>
                 <span class="tab-item" id="tab-albums" onclick="switchTab('albums')">Albums</span>
             </div>
-            <span class="logout-btn" onclick="logout()">Logout</span>
+            <span class="logout-btn" onclick="confirmLogout()">Logout</span>
         </div>
     </header>
 
@@ -27,25 +27,31 @@
 
         <div id="albums-section" class="hidden">
             <div class="album-actions">
-                <button class="create-folder-btn" onclick="createNewFolder()">+ Create New Event</button>
+                <button class="create-folder-btn" onclick="initCreateFolder()">+ Create New Event</button>
             </div>
             <div id="folder-grid" class="grid-3"></div>
         </div>
 
         <div id="folder-inner-view" class="hidden">
-            <div class="event-header">
+            <div class="event-header-container">
                 <button class="back-btn" onclick="backToFolders()">← Back</button>
-                <h3 id="current-folder-title"></h3>
+                <h3 id="current-folder-title">Event Name</h3>
             </div>
             
-            <div class="upload-options">
-                <div class="upload-card" onclick="triggerUpload('photo')">
-                    <span class="icon">🖼️</span>
-                    <p>Add Photo</p>
+            <div class="upload-container">
+                <div class="upload-card photo-card" onclick="triggerFileUpload('photo')">
+                    <div class="icon-circle">🖼️</div>
+                    <div class="upload-info">
+                        <strong>Upload Photos</strong>
+                        <span>JPG, PNG, GIF</span>
+                    </div>
                 </div>
-                <div class="upload-card" onclick="triggerUpload('video')">
-                    <span class="icon">🎥</span>
-                    <p>Add Video</p>
+                <div class="upload-card video-card" onclick="triggerFileUpload('video')">
+                    <div class="icon-circle">🎥</div>
+                    <div class="upload-info">
+                        <strong>Upload Videos</strong>
+                        <span>MP4, MOV, WEBM</span>
+                    </div>
                 </div>
             </div>
             
@@ -61,10 +67,14 @@
     </div>
 
     <footer id="gallery-footer">
-        <p id="total-count">0 Items</p>
+        <div class="footer-stats">
+            <span id="total-count">0 Items Found</span>
+            <span class="user-id">User: @siyam</span>
+        </div>
     </footer>
 
-    <input type="file" id="file-input" hidden multiple onchange="uploadFiles()">
+    <input type="file" id="photo-input" hidden accept="image/*" multiple onchange="handleFileSelect(event, 'photo')">
+    <input type="file" id="video-input" hidden accept="video/*" multiple onchange="handleFileSelect(event, 'video')">
 
     <script src="script.js"></script>
 </body>
