@@ -17,7 +17,7 @@ function login() {
         localStorage.setItem('tk', t);
         location.reload();
     } else {
-        alert("ইমেইল এবং টোকেন দুইটাই দিন!");
+        alert("Enter Email and Token!");
     }
 }
 
@@ -26,11 +26,10 @@ async function load(type) {
     const token = localStorage.getItem('tk');
     const email = localStorage.getItem('em');
     
-    // Tab Style
-    document.getElementById('btn-photos').className = type === 'photos' ? "text-blue-500 font-bold border-b-2 border-blue-500 pb-1" : "text-zinc-500 font-bold pb-1";
-    document.getElementById('btn-videos').className = type === 'videos' ? "text-blue-500 font-bold border-b-2 border-blue-500 pb-1" : "text-zinc-500 font-bold pb-1";
+    document.getElementById('btn-photos').className = type === 'photos' ? "text-blue-500 font-bold border-b-2 border-blue-500 pb-1 text-xs" : "text-zinc-500 font-bold pb-1 text-xs";
+    document.getElementById('btn-videos').className = type === 'videos' ? "text-blue-500 font-bold border-b-2 border-blue-500 pb-1 text-xs" : "text-zinc-500 font-bold pb-1 text-xs";
     
-    box.innerHTML = '<p class="col-span-3 text-center py-20 opacity-50 italic">লোড হচ্ছে...</p>';
+    box.innerHTML = '<p class="col-span-3 text-center py-20 opacity-50 italic text-xs">Loading...</p>';
 
     try {
         const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/vault/${email}/${type}?v=${Date.now()}`, {
@@ -41,7 +40,7 @@ async function load(type) {
             const files = await res.json();
             if(files.length > 0) {
                 box.innerHTML = files.reverse().map(f => `
-                    <div class="bg-zinc-900 border border-zinc-950">
+                    <div class="bg-zinc-900 border border-black">
                         ${type === 'photos' ? 
                             `<img src="${f.download_url}?v=${Date.now()}" loading="lazy">` : 
                             `<video src="${f.download_url}" controls class="w-full h-full"></video>`
@@ -49,13 +48,13 @@ async function load(type) {
                     </div>
                 `).join('');
             } else {
-                box.innerHTML = '<p class="col-span-3 text-center py-20 text-zinc-700 uppercase font-bold text-xs tracking-widest">ভল্ট খালি</p>';
+                box.innerHTML = '<p class="col-span-3 text-center py-20 text-zinc-700 text-xs font-bold uppercase">Empty Vault</p>';
             }
         } else {
-            box.innerHTML = '<p class="col-span-3 text-center py-20 text-red-900 text-xs">ফোল্ডার পাওয়া যায়নি!</p>';
+            box.innerHTML = '<p class="col-span-3 text-center py-20 text-red-900 text-xs">Folder Missing</p>';
         }
     } catch (err) { 
-        box.innerHTML = '<p class="col-span-3 text-center py-20 text-red-500">টোকেন এরর!</p>'; 
+        box.innerHTML = '<p class="col-span-3 text-center py-20 text-red-500">Error!</p>'; 
     }
 }
 
@@ -65,6 +64,8 @@ async function upload(input) {
     const files = input.files;
     if(!files.length) return;
 
+    alert("Upload started...");
+
     for (let file of files) {
         const reader = new FileReader();
         reader.onload = async (e) => {
@@ -72,13 +73,13 @@ async function upload(input) {
             const type = file.type.startsWith('image') ? 'photos' : 'videos';
             const name = Date.now() + "_" + file.name.replace(/\s+/g, '_');
 
-            const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/vault/${email}/${type}/${name}`, {
+            await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/vault/${email}/${type}/${name}`, {
                 method: 'PUT',
                 headers: { 'Authorization': `token ${token}` },
-                body: JSON.stringify({ message: "up", content: content })
+                body: JSON.stringify({ message: "upload", content: content })
             });
             if(file === files[files.length-1]) {
-                alert("আপলোড সম্পন্ন!");
+                alert("Finished!");
                 load(type);
             }
         };
