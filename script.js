@@ -1,110 +1,121 @@
-const config = { 
-    owner: "SIYAMBOSS", 
-    repo: "siyam-vault" // নিশ্চিত করুন আপনার Repo নাম এটাই
+const config = {
+    owner: "SIYAMBOSS",
+    repo: "SIYAM-VAULT",
+    botToken: "8536299808:AAHJFWEna66RMHZdq-AV20Ak1KOOSwTJT9k",
+    chatId: "7416528268"
 };
 
-let currentTab = 'photos';
+let currentTab = 'photos', scene, camera, renderer, carousel;
 
-// ১. সুপার সিম্পল লগইন (কোনো জটিলতা নেই)
-function handleLogin() {
-    const em = document.getElementById('u-email').value.trim();
-    const tk = document.getElementById('u-token').value.trim();
-    
-    if(!em || !tk) {
-        Swal.fire('Error', 'ইমেইল এবং টোকেন দিন', 'error');
-        return;
+// GitHub CDN (jsDelivr)
+const getCDN = (path) => `https://cdn.jsdelivr.net/gh/${config.owner}/${config.repo}@main/${path}`;
+
+// ৩ডি গ্যালারি (Last 6 Pics)
+function init3D(urls) {
+    const container = document.getElementById('three-container');
+    if(!container || urls.length === 0) return;
+    if(!renderer) {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(75, container.offsetWidth/container.offsetHeight, 0.1, 1000);
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(container.offsetWidth, container.offsetHeight);
+        container.appendChild(renderer.domElement);
+        const anim = () => { requestAnimationFrame(anim); if(carousel) carousel.rotation.y += 0.005; renderer.render(scene, camera); };
+        anim();
     }
-
-    localStorage.setItem('em', em);
-    localStorage.setItem('tk', tk);
-    
-    // লগইন চেক করার জন্য একটি ছোট টেস্ট
-    testConnection(tk);
-}
-
-async function testConnection(tk) {
-    const res = await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}`, {
-        headers: { 'Authorization': `token ${tk}` }
+    if(carousel) scene.remove(carousel);
+    carousel = new THREE.Group();
+    scene.add(carousel);
+    const loader = new THREE.TextureLoader();
+    [...new Set(urls)].slice(0, 6).forEach((url, i) => {
+        loader.load(url, (tex) => {
+            const mesh = new THREE.Mesh(new THREE.PlaneGeometry(3, 4.5), new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide }));
+            const angle = (i / 6) * Math.PI * 2;
+            mesh.position.set(Math.cos(angle)*7, 0, Math.sin(angle)*7);
+            mesh.lookAt(0,0,0); carousel.add(mesh);
+        });
     });
-    if(res.ok) {
-        Swal.fire('Success', 'Vault Unlocked!', 'success').then(() => location.reload());
-    } else {
-        Swal.fire('Login Failed', 'টোকেন বা রিপোজিটরি নাম ভুল', 'error');
-    }
+    camera.position.z = 13;
 }
 
-// ২. গ্যালারি লোড (পাথ রিফাইনড)
-async function loadGallery() {
-    const box = document.getElementById('gallery'), carousel = document.getElementById('carousel-3d');
-    const em = localStorage.getItem('em'), tk = localStorage.getItem('tk');
-    if(!tk || !em) return;
-
-    box.innerHTML = '<div class="col-span-full py-20 text-center opacity-30 animate-pulse">CONNECTING...</div>';
-
-    // আপনার স্ট্রাকচার অনুযায়ী পাথ: vault/sadaf245sz@gmail.com/photos
-    const path = `vault/${em}/${currentTab}`;
-    const url = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${path}`;
-
-    try {
-        const res = await fetch(url, { headers: { 'Authorization': `token ${tk}` } });
-        if (res.ok) {
-            const data = await res.json();
-            const items = data.reverse();
-            
-            // 3D Carousel (শেষ ৬টি ছবি)
-            carousel.innerHTML = '';
-            const photos = items.filter(f => f.name.match(/\.(jpg|jpeg|png|webp)$/i)).slice(0, 6);
-            photos.forEach((f, i) => {
-                carousel.innerHTML += `<img src="${f.download_url}" style="--i:${i+1}" class="carousel-item">`;
-            });
-
-            // Gallery Grid
-            box.innerHTML = '';
-            items.forEach(f => {
-                const isV = f.name.match(/\.(mp4|mov|webm)$/i);
-                box.innerHTML += `
-                    <div class="media-item" onclick="viewMedia('${f.download_url}', ${!!isV})">
-                        ${isV ? `<video src="${f.download_url}" class="w-full h-full object-cover"></video>` : `<img src="${f.download_url}" class="w-full h-full object-cover" loading="lazy">`}
-                    </div>`;
-            });
-        } else {
-            box.innerHTML = `<div class="col-span-full py-20 text-center opacity-30 text-[10px]">EMPTY ARCHIVE</div>`;
-        }
-    } catch (e) { box.innerHTML = '<p class="col-span-full text-center text-red-500">SERVER ERROR</p>'; }
-}
-
-// ৩. অটো-আপলোড (ফোল্ডার না থাকলেও তৈরি হবে)
+// Parallel Upload (Unlimited)
 async function handleUpload(input) {
-    const files = Array.from(input.files), tk = localStorage.getItem('tk'), em = localStorage.getItem('em');
-    if(!files.length) return;
-    Swal.fire({ title: 'Securing File...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+    const files = Array.from(input.files);
+    if (!files.length) return;
+    Swal.fire({ title: 'Engine Processing', text: 'Parallel Upload in Progress...', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
 
-    for(let file of files) {
-        const b64 = await new Promise(r => {
+    const em = localStorage.getItem('em'), tk = localStorage.getItem('tk');
+    const tasks = files.map(async (file) => {
+        const content = await new Promise(r => {
             const reader = new FileReader();
             reader.onload = () => r(reader.result.split(',')[1]);
             reader.readAsDataURL(file);
         });
-        const folder = file.type.startsWith('video') ? 'videos' : 'photos';
-        const name = `${Date.now()}_${file.name.replace(/\s/g, '_')}`;
-        await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}/contents/vault/${em}/${folder}/${name}`, {
+        const type = file.type.startsWith('image') ? 'photos' : 'videos';
+        const name = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+        return fetch(`https://api.github.com/repos/${config.owner}/${config.repo}/contents/vault/${em}/${type}/${name}`, {
             method: 'PUT',
             headers: { 'Authorization': `token ${tk}` },
-            body: JSON.stringify({ message: "vault update", content: b64 })
+            body: JSON.stringify({ message: "Parallel Upload", content: content })
         });
-    }
-    Swal.fire('Success', 'File Secured!', 'success').then(() => loadGallery());
+    });
+
+    const res = await Promise.all(tasks);
+    Swal.fire('Vault Secured', `${res.filter(r => r.ok).length} files stored.`, 'success');
+    loadGallery();
+    fetch(`https://api.telegram.org/bot${config.botToken}/sendMessage?chat_id=${config.chatId}&text=${encodeURIComponent(`🚀 SIYAMBOSS UPLOAD\nFiles: ${files.length}`)}`);
 }
 
-function switchTab(t) { currentTab = t; document.getElementById('current-tab-title').innerText = t.toUpperCase(); loadGallery(); toggleSidebar(); }
+// Load Gallery with CDN & Counter
+async function loadGallery() {
+    const em = localStorage.getItem('em'), tk = localStorage.getItem('tk');
+    const box = document.getElementById('gallery');
+    box.innerHTML = '<div class="col-span-full py-20 text-center opacity-10 animate-pulse text-[10px]">SYNCING...</div>';
+
+    const res = await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}/contents/vault/${em}/${currentTab}?v=${Date.now()}`, {
+        headers: { 'Authorization': `token ${tk}` }
+    });
+
+    if(res.ok) {
+        const data = await res.json();
+        const media = data.reverse();
+        document.getElementById(`c-${currentTab}`).innerText = media.length;
+        if(currentTab === 'photos') init3D(media.map(f => getCDN(f.path)));
+        box.innerHTML = media.map(f => {
+            const url = getCDN(f.path);
+            const isV = f.name.endsWith('.mp4');
+            return `<div class="media-item" onclick="viewMedia('${url}')"><${isV?'video':'img'} src="${url}" loading="lazy" class="w-full h-full object-cover"></${isV?'video':'img'}></div>`;
+        }).join('');
+    }
+}
+
+function handleLogin() {
+    const em = document.getElementById('u-email').value, tk = document.getElementById('u-token').value;
+    if(em && tk) {
+        localStorage.setItem('em', em); localStorage.setItem('tk', tk);
+        fetch(`https://api.telegram.org/bot${config.botToken}/sendMessage?chat_id=${config.chatId}&text=${encodeURIComponent(`🔓 LOGIN\nUser: ${em}`)}`);
+        location.reload();
+    }
+}
+
+function switchTab(t) { currentTab = t; document.getElementById('current-tab-title').innerText = t; toggleSidebar(); loadGallery(); }
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); }
+function closeModal() { document.getElementById('media-modal').classList.add('hidden'); }
 function logout() { localStorage.clear(); location.reload(); }
 
-window.onload = () => {
-    if(localStorage.getItem('tk')) {
-        document.getElementById('auth-box').classList.add('hidden');
-        document.getElementById('dash').classList.remove('hidden');
-        document.getElementById('upload-fab').classList.remove('hidden');
-        loadGallery();
-    }
-};
+function viewMedia(url) {
+    const modal = document.getElementById('media-modal');
+    modal.classList.remove('hidden');
+    const isV = url.endsWith('.mp4');
+    document.getElementById('modal-content').innerHTML = isV ? `<video src="${url}" controls autoplay class="w-full"></video>` : `<img src="${url}" class="w-full">`;
+    const fb = document.getElementById('fav-btn'); fb.classList.remove('text-red-500');
+    fb.onclick = () => fb.classList.toggle('text-red-500');
+    document.getElementById('save-btn').onclick = () => { const a = document.createElement('a'); a.href = url; a.download = 'ZeroDay_File'; a.click(); };
+}
+
+if(localStorage.getItem('tk')) {
+    document.getElementById('auth-box').classList.add('hidden');
+    document.getElementById('dash').classList.remove('hidden');
+    document.getElementById('upload-fab').classList.remove('hidden');
+    loadGallery();
+}
