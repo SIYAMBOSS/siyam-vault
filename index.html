@@ -3,76 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ZeroDay Vault Pro</title>
-    
+    <title>ZeroDay Ultra Vault</title>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="logo.png">
-    <link rel="apple-touch-icon" href="logo.png">
-    <meta name="theme-color" content="#0b0b1a">
-    <meta name="mobile-web-app-capable" content="yes">
-
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-
     <script>
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js').catch(err => console.error(err));
+            navigator.serviceWorker.register('./sw.js').catch(e => console.error(e));
         }
     </script>
 </head>
 <body class="bg-[#0b0b1a] text-white overflow-hidden">
 
-    <div id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-[#0b0b1a]/98 z-[500] transform -translate-x-full transition-transform duration-300 border-r border-cyan-500/20 shadow-2xl backdrop-blur-xl">
-        <div class="p-8">
-            <div class="mb-10 text-center">
-                <img src="logo.png" id="side-logo" class="w-16 h-16 mx-auto rounded-2xl border border-cyan-500/30 mb-4 shadow-[0_0_20px_rgba(6,182,212,0.3)]">
-                <h2 class="text-[10px] font-black italic text-cyan-500 tracking-[0.3em]">SIYAMBOSS</h2>
+    <div id="auth-box" class="flex items-center justify-center min-h-screen p-6 relative z-[600]">
+        <div class="bg-white/5 backdrop-blur-2xl p-8 rounded-[40px] border border-white/10 text-center w-full max-w-sm shadow-2xl">
+            <img src="logo.png" class="w-16 h-16 mx-auto mb-6 rounded-2xl animate-pulse shadow-[0_0_30px_rgba(6,182,212,0.3)]">
+            <h1 class="text-2xl font-black italic text-cyan-500 mb-6 tracking-tighter uppercase">ZeroDay Vault</h1>
+            
+            <div class="space-y-3">
+                <input type="email" id="u-email" placeholder="Gmail Address" class="glass-input">
+                <input type="password" id="u-token" placeholder="GitHub Token" class="glass-input">
+                <div class="pt-4 border-t border-white/10">
+                    <p class="text-[10px] text-cyan-400 font-bold mb-2 uppercase tracking-widest">Master Encryption Key</p>
+                    <input type="password" id="u-key" placeholder="Create Secret Key" class="glass-input mb-2 border-cyan-500/30">
+                    <input type="password" id="u-key-conf" placeholder="Confirm Secret Key" class="glass-input border-cyan-500/30">
+                </div>
             </div>
-            <nav class="space-y-2">
-                <button onclick="switchTab('photos')" class="menu-link active"><i class="fa-solid fa-image"></i> PHOTOS <span id="c-photos" class="ml-auto opacity-40 text-[8px]">0</span></button>
-                <button onclick="switchTab('videos')" class="menu-link"><i class="fa-solid fa-video"></i> VIDEOS <span id="c-videos" class="ml-auto opacity-40 text-[8px]">0</span></button>
-                <button onclick="switchTab('favorites')" class="menu-link"><i class="fa-solid fa-heart text-red-500"></i> FAVORITES <span id="c-favorites" class="ml-auto opacity-40 text-[8px]">0</span></button>
-                <button onclick="switchTab('trash')" class="menu-link"><i class="fa-solid fa-trash-can"></i> TRASH <span id="c-trash" class="ml-auto opacity-40 text-[8px]">0</span></button>
-            </nav>
+
+            <button onclick="handleLogin()" class="w-full mt-6 py-4 bg-cyan-600 rounded-2xl font-black uppercase text-[10px] tracking-widest active:scale-95 transition-all shadow-lg">Initialize Vault</button>
+            
+            <div class="mt-6 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-2xl text-left">
+                <h3 class="text-yellow-500 text-[9px] font-black uppercase mb-1"><i class="fa-solid fa-triangle-exclamation"></i> Important:</h3>
+                <p class="text-[8px] text-white/60 leading-relaxed">এই কি (Key) টি ভুলে গেলে আপনার ছবিগুলো আর কখনোই ডিক্রিপ্ট করা সম্ভব হবে না।</p>
+            </div>
         </div>
     </div>
 
-    <div id="auth-box" class="flex items-center justify-center min-h-screen p-6">
-        <div class="bg-white/5 p-10 rounded-[40px] border border-white/10 text-center shadow-2xl max-w-sm w-full">
-            <img src="logo.png" class="w-20 h-20 mx-auto mb-6 rounded-3xl animate-pulse">
-            <h1 class="text-3xl font-black italic text-cyan-500 mb-8">ZeroDay <span class="text-white">Vault</span></h1>
-            <input type="email" id="u-email" placeholder="Gmail" class="glass-input mb-4">
-            <input type="password" id="u-token" placeholder="GitHub Token" class="glass-input mb-6">
-            <button onclick="handleLogin()" class="w-full py-4 bg-cyan-600 rounded-2xl font-black uppercase text-[10px] tracking-widest active:scale-95 transition-all">Unlock</button>
+    <div id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-[#0b0b1a]/98 z-[500] transform -translate-x-full transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) border-r border-cyan-500/20 shadow-2xl backdrop-blur-xl">
+        <div class="p-8 h-full flex flex-col">
+            <div class="flex items-center gap-4 mb-12">
+                <img src="logo.png" class="w-10 h-10 rounded-xl border border-cyan-500/20">
+                <h2 class="text-xs font-black text-cyan-500 tracking-[0.3em]">SIYAMBOSS</h2>
+            </div>
+            <nav class="space-y-2 flex-1">
+                <button onclick="switchTab('photos')" class="menu-link active group"><i class="fa-solid fa-image"></i> <span>PHOTOS</span> <span id="c-photos" class="badge">0</span></button>
+                <button onclick="switchTab('videos')" class="menu-link group"><i class="fa-solid fa-video"></i> <span>VIDEOS</span> <span id="c-videos" class="badge">0</span></button>
+                <button onclick="switchTab('favorites')" class="menu-link group"><i class="fa-solid fa-heart text-red-500"></i> <span>FAVORITES</span> <span id="c-favorites" class="badge">0</span></button>
+                <button onclick="switchTab('trash')" class="menu-link group text-red-400"><i class="fa-solid fa-trash-can"></i> <span>TRASH BIN</span> <span id="c-trash" class="badge">0</span></button>
+            </nav>
         </div>
     </div>
 
     <div id="dash" class="hidden relative z-10 w-full h-screen overflow-y-auto">
         <header class="flex justify-between items-center px-6 py-4 border-b border-white/5 bg-[#0b0b1a]/90 backdrop-blur-xl sticky top-0 z-[100]">
-            <button onclick="toggleSidebar()" class="text-xl text-cyan-500"><i class="fa-solid fa-bars-staggered"></i></button>
-            <h2 id="current-tab-title" class="text-[9px] font-black italic text-cyan-500 tracking-widest uppercase">PHOTOS</h2>
-            <button onclick="logout()" class="text-[9px] font-black text-red-500 border border-red-500/20 px-4 py-2 rounded-full">Logout</button>
+            <button onclick="toggleSidebar()" class="text-xl text-cyan-500 active:scale-90 transition-transform"><i class="fa-solid fa-bars-staggered"></i></button>
+            <h2 id="current-tab-title" class="text-[9px] font-black italic text-cyan-500 tracking-widest">PHOTOS</h2>
+            <button onclick="logout()" class="text-[9px] font-black text-red-500 px-4 py-2 rounded-full border border-red-500/20">Logout</button>
         </header>
 
-        <div id="three-container" class="w-full h-[300px]"></div>
+        <div id="three-container" class="w-full h-[250px] bg-gradient-to-b from-cyan-500/5 to-transparent border-b border-white/5"></div>
         <div id="gallery" class="grid grid-cols-2 md:grid-cols-4 gap-1 p-1 pb-40"></div>
     </div>
 
     <div id="media-modal" class="hidden fixed inset-0 z-[700] bg-black/98 flex flex-col items-center justify-center p-4">
-        <button onclick="closeModal()" class="absolute top-6 right-6 w-12 h-12 bg-red-600/20 text-red-500 rounded-full border border-red-500/30 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-        <div id="modal-content" class="w-full max-w-4xl max-h-[60vh] rounded-3xl overflow-hidden"></div>
+        <button onclick="closeModal()" class="absolute top-6 right-6 text-white text-2xl"><i class="fa-solid fa-xmark"></i></button>
+        <div id="modal-content" class="w-full max-w-4xl max-h-[70vh] rounded-3xl overflow-hidden shadow-2xl"></div>
         <div class="flex gap-6 mt-8">
-            <button id="fav-btn" class="action-btn text-white"><i class="fa-solid fa-heart"></i></button>
+            <button id="fav-btn" onclick="toggleLove(this)" class="action-btn text-white"><i class="fa-solid fa-heart"></i></button>
             <button id="save-btn" class="action-btn text-cyan-400"><i class="fa-solid fa-download"></i></button>
             <button id="trash-btn" class="action-btn text-red-500"><i class="fa-solid fa-trash"></i></button>
         </div>
     </div>
 
-    <label id="upload-fab" class="hidden fixed bottom-8 right-8 w-16 h-16 bg-cyan-600 rounded-full flex items-center justify-center shadow-2xl z-[150] active:scale-90 border border-white/20">
-        <i class="fa-solid fa-plus text-2xl text-white"></i>
+    <label id="upload-fab" class="hidden fixed bottom-8 right-8 w-16 h-16 bg-cyan-600 rounded-full flex items-center justify-center shadow-2xl z-[150] border border-white/20">
+        <i class="fa-solid fa-plus text-2xl"></i>
         <input type="file" id="file-input" class="hidden" multiple onchange="handleUpload(this)">
     </label>
 
