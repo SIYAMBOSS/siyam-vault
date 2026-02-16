@@ -11,34 +11,31 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js').catch(e => console.error(e));
-        }
-    </script>
 </head>
 <body class="bg-[#0b0b1a] text-white overflow-hidden">
 
     <div id="auth-box" class="flex items-center justify-center min-h-screen p-6 relative z-[600]">
-        <div class="bg-white/5 backdrop-blur-2xl p-8 rounded-[40px] border border-white/10 text-center w-full max-w-sm shadow-2xl">
-            <img src="logo.png" class="w-16 h-16 mx-auto mb-6 rounded-2xl animate-pulse shadow-[0_0_30px_rgba(6,182,212,0.3)]">
-            <h1 class="text-2xl font-black italic text-cyan-500 mb-6 tracking-tighter uppercase">ZeroDay Vault</h1>
+        <div class="bg-white/5 backdrop-blur-2xl p-8 rounded-[40px] border border-cyan-500/20 text-center w-full max-w-sm shadow-2xl">
+            <img src="logo.png" class="w-16 h-16 mx-auto mb-6 rounded-2xl animate-pulse shadow-lg">
+            <h1 class="text-2xl font-black italic text-cyan-500 mb-8 uppercase tracking-widest">ZeroDay Vault</h1>
             
-            <div class="space-y-3">
+            <div class="space-y-4">
                 <input type="email" id="u-email" placeholder="Gmail Address" class="glass-input">
                 <input type="password" id="u-token" placeholder="GitHub Token" class="glass-input">
-                <div class="pt-4 border-t border-white/10">
-                    <p class="text-[10px] text-cyan-400 font-bold mb-2 uppercase tracking-widest">Master Encryption Key</p>
-                    <input type="password" id="u-key" placeholder="Create Secret Key" class="glass-input mb-2 border-cyan-500/30">
-                    <input type="password" id="u-key-conf" placeholder="Confirm Secret Key" class="glass-input border-cyan-500/30">
+                
+                <div class="pt-6 border-t border-white/10">
+                    <p class="text-[9px] text-cyan-400 font-bold mb-3 uppercase tracking-widest">Set Your Master Password</p>
+                    <input type="password" id="u-key" placeholder="Create Secret Password" class="glass-input mb-3 border-cyan-500/30">
+                    <input type="password" id="u-key-conf" placeholder="Confirm Secret Password" class="glass-input border-cyan-500/30">
                 </div>
             </div>
 
-            <button onclick="handleLogin()" class="w-full mt-6 py-4 bg-cyan-600 rounded-2xl font-black uppercase text-[10px] tracking-widest active:scale-95 transition-all shadow-lg">Initialize Vault</button>
+            <button onclick="handleLogin()" class="w-full mt-8 py-4 bg-cyan-600 rounded-2xl font-black uppercase text-[10px] tracking-[0.3em] active:scale-95 transition-all">Unlock Archive</button>
             
-            <div class="mt-6 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-2xl text-left">
-                <h3 class="text-yellow-500 text-[9px] font-black uppercase mb-1"><i class="fa-solid fa-triangle-exclamation"></i> Important:</h3>
-                <p class="text-[8px] text-white/60 leading-relaxed">এই কি (Key) টি ভুলে গেলে আপনার ছবিগুলো আর কখনোই ডিক্রিপ্ট করা সম্ভব হবে না।</p>
+            <div class="mt-6 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-left">
+                <p class="text-[8px] text-red-400 leading-relaxed italic">
+                    * আপনার পাসওয়ার্ডটি মনে রাখুন। এটি হারিয়ে ফেললে আপনার ফাইলগুলো আর ডিক্রিপ্ট করা সম্ভব হবে না।
+                </p>
             </div>
         </div>
     </div>
@@ -60,8 +57,8 @@
 
     <div id="dash" class="hidden relative z-10 w-full h-screen overflow-y-auto">
         <header class="flex justify-between items-center px-6 py-4 border-b border-white/5 bg-[#0b0b1a]/90 backdrop-blur-xl sticky top-0 z-[100]">
-            <button onclick="toggleSidebar()" class="text-xl text-cyan-500 active:scale-90 transition-transform"><i class="fa-solid fa-bars-staggered"></i></button>
-            <h2 id="current-tab-title" class="text-[9px] font-black italic text-cyan-500 tracking-widest">PHOTOS</h2>
+            <button onclick="toggleSidebar()" class="text-xl text-cyan-500"><i class="fa-solid fa-bars-staggered"></i></button>
+            <h2 id="current-tab-title" class="text-[9px] font-black italic text-cyan-500 tracking-widest uppercase">PHOTOS</h2>
             <button onclick="logout()" class="text-[9px] font-black text-red-500 px-4 py-2 rounded-full border border-red-500/20">Logout</button>
         </header>
 
