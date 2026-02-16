@@ -7,7 +7,7 @@ const config = {
 
 let currentTab = 'photos', scene, camera, renderer, carousel;
 
-// --- Crypto Engine ---
+// --- Crypto Functions ---
 const encrypt = async (data, key) => {
     const enc = new TextEncoder();
     const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -28,13 +28,35 @@ const decrypt = async (cipher, key) => {
     } catch(e) { return null; }
 };
 
-// --- Fast Upload & Load ---
+// --- Login Fix ---
+function handleLogin() {
+    const em = document.getElementById('u-email').value.trim();
+    const tk = document.getElementById('u-token').value.trim();
+    const key = document.getElementById('u-key').value.trim();
+    const conf = document.getElementById('u-key-conf').value.trim();
+
+    if(!em || !tk || !key) {
+        return Swal.fire('Error', 'সবগুলো ঘর পূরণ করুন', 'error');
+    }
+    if(key !== conf) {
+        return Swal.fire('Mismatch', 'পাসওয়ার্ড দুটি মেলেনি!', 'warning');
+    }
+
+    localStorage.setItem('em', em);
+    localStorage.setItem('tk', tk);
+    localStorage.setItem('ukey', key);
+    
+    Swal.fire({ title: 'Vault Initialized', icon: 'success', showConfirmButton: false, timer: 1500 });
+    setTimeout(() => location.reload(), 1500);
+}
+
+// --- Upload Logic ---
 async function handleUpload(input) {
     const files = Array.from(input.files);
     const key = localStorage.getItem('ukey');
     if(!files.length || !key) return;
 
-    Swal.fire({ title: 'Securing...', text: 'Parallel Encryption active', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+    Swal.fire({ title: 'Securing...', text: 'Encrypting files', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
     const tasks = files.map(async (file) => {
         const base64 = await new Promise(r => {
@@ -54,14 +76,16 @@ async function handleUpload(input) {
     });
 
     await Promise.all(tasks);
-    Swal.fire({ title: 'Vault Updated', icon: 'success', toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
+    Swal.fire({ title: 'Secured', icon: 'success', toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
     loadGallery();
 }
 
 async function loadGallery() {
     const box = document.getElementById('gallery');
     const em = localStorage.getItem('em'), tk = localStorage.getItem('tk'), key = localStorage.getItem('ukey');
-    box.innerHTML = '<div class="col-span-full py-20 text-center opacity-10 animate-pulse text-[10px] tracking-[1em]">DECRYPTING...</div>';
+    if(!tk) return;
+
+    box.innerHTML = '<div class="col-span-full py-20 text-center opacity-10 animate-pulse text-[10px] tracking-widest uppercase">Decrypting Archive...</div>';
 
     const res = await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}/contents/vault/${em}/${currentTab}?v=${Date.now()}`, {
         headers: { 'Authorization': `token ${tk}` }
@@ -85,24 +109,17 @@ async function loadGallery() {
             }
         }
         if(currentTab === 'photos') init3D(urls.slice(0,6));
+    } else {
+        box.innerHTML = '<p class="col-span-full text-center opacity-40 text-xs">No files found or Token error.</p>';
     }
 }
 
-// --- UI Logic ---
-function toggleLove(btn) { 
-    btn.classList.toggle('text-red-500'); 
-    btn.classList.toggle('scale-125'); 
-    if(navigator.vibrate) navigator.vibrate(50); 
-}
-
-function handleLogin() {
-    const em = document.getElementById('u-email').value, tk = document.getElementById('u-token').value, 
-          key = document.getElementById('u-key').value, conf = document.getElementById('u-key-conf').value;
-    if(!em || !tk || !key) return Swal.fire('Error', 'Missing fields', 'error');
-    if(key !== conf) return Swal.fire('Mismatch', 'Keys do not match', 'warning');
-    localStorage.setItem('em', em); localStorage.setItem('tk', tk); localStorage.setItem('ukey', key);
-    location.reload();
-}
+// --- UI Controls ---
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); }
+function closeModal() { document.getElementById('media-modal').classList.add('hidden'); }
+function logout() { localStorage.clear(); location.reload(); }
+function switchTab(t) { currentTab = t; document.getElementById('current-tab-title').innerText = t; toggleSidebar(); loadGallery(); }
+function toggleLove(btn) { btn.classList.toggle('text-red-500'); btn.classList.toggle('scale-125'); if(navigator.vibrate) navigator.vibrate(50); }
 
 function init3D(urls) {
     const container = document.getElementById('three-container');
@@ -130,21 +147,16 @@ function init3D(urls) {
     camera.position.z = 13;
 }
 
-function toggleSidebar() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); }
-function closeModal() { document.getElementById('media-modal').classList.add('hidden'); }
-function logout() { localStorage.clear(); location.reload(); }
-function switchTab(t) { currentTab = t; document.getElementById('current-tab-title').innerText = t; toggleSidebar(); loadGallery(); }
-
 function viewMedia(url, sha, path) {
     const modal = document.getElementById('media-modal'); modal.classList.remove('hidden');
     const isV = url.includes('video/mp4');
     document.getElementById('modal-content').innerHTML = isV ? `<video src="${url}" controls autoplay class="w-full"></video>` : `<img src="${url}" class="w-full">`;
     document.getElementById('trash-btn').onclick = () => deleteFile(sha, path);
-    document.getElementById('save-btn').onclick = () => { const a = document.createElement('a'); a.href = url; a.download = 'Secure_ZD'; a.click(); };
+    document.getElementById('save-btn').onclick = () => { const a = document.createElement('a'); a.href = url; a.download = 'ZD_Secure'; a.click(); };
 }
 
 async function deleteFile(sha, path) {
-    const confirm = await Swal.fire({ title: 'Delete?', text: 'This will remove the file forever.', icon: 'warning', showCancelButton: true });
+    const confirm = await Swal.fire({ title: 'Delete Forever?', icon: 'warning', showCancelButton: true });
     if(confirm.isConfirmed) {
         const res = await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}/contents/${path}`, {
             method: 'DELETE',
@@ -155,6 +167,7 @@ async function deleteFile(sha, path) {
     }
 }
 
+// Check Auth state on boot
 if(localStorage.getItem('tk')) {
     document.getElementById('auth-box').classList.add('hidden');
     document.getElementById('dash').classList.remove('hidden');
