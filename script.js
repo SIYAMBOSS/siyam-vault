@@ -1,85 +1,96 @@
-// ১. সাইডবার টগল
-function toggleSidebar() {
-    const sb = document.getElementById('sidebar');
-    sb.classList.toggle('-translate-x-full');
-}
+const config = { owner: "SIYAMBOSS", repo: "siyam-vault" };
+let currentTab = 'photos';
 
-// ২. ডিলিট টু ট্রাশ লজিক (Move File)
-async function moveToTrash(path, sha, fileName) {
-    const em = localStorage.getItem('em'), tk = localStorage.getItem('tk');
-    
-    // ১. ফাইল কন্টেন্ট সংগ্রহ
-    const res = await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}/contents/${path}`, {
-        headers: { 'Authorization': `token ${tk}` }
-    });
-    const fileData = await res.json();
-
-    // ২. ট্রাশ ফোল্ডারে পাঠানো
-    await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}/contents/vault/${em}/trash/${fileName}`, {
-        method: 'PUT',
-        headers: { 'Authorization': `token ${tk}` },
-        body: JSON.stringify({ message: "moved to trash", content: fileData.content })
-    });
-
-    // ৩. অরিজিনাল ফাইল ডিলিট
-    await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}/contents/${path}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `token ${tk}` },
-        body: JSON.stringify({ message: "delete", sha: sha })
-    });
-
-    Swal.fire('Moved to Trash', '', 'success');
-    closeModal();
-    loadGallery();
-}
-
-// ৩. গ্যালারি লোড (ফাস্ট লোডিং লজিক)
-async function loadGallery() {
-    const em = localStorage.getItem('em'), tk = localStorage.getItem('tk');
-    const box = document.getElementById('gallery');
-    
-    // ল্যাগ কমাতে আগে ছোট ডাটা রিকোয়েস্ট
-    const res = await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}/contents/vault/${em}/${currentTab}`, {
-        headers: { 'Authorization': `token ${tk}` }
-    });
-    const data = await res.json();
-    
-    if(res.ok && Array.isArray(data)) {
-        // ফাইল কাউন্ট আপডেট
-        document.getElementById('file-counter').innerText = `${data.length} ITEMS IN ${currentTab.toUpperCase()}`;
-        
-        box.innerHTML = data.reverse().map(f => {
-            const url = `https://cdn.jsdelivr.net/gh/${config.owner}/${config.repo}@main/${f.path}`;
-            const isV = f.name.endsWith('.mp4');
-            return `
-                <div class="media-item" onclick="viewMedia('${url}','${f.sha}','${f.name}','${f.path}')">
-                    <${isV?'video':'img'} src="${url}" class="w-full h-full object-cover"></${isV?'video':'img'}>
-                </div>`;
-        }).join('');
+function handleLogin() {
+    const em = document.getElementById('u-email').value.trim();
+    const tk = document.getElementById('u-token').value.trim();
+    if(em && tk) {
+        localStorage.setItem('em', em);
+        localStorage.setItem('tk', tk);
+        location.reload();
     }
 }
 
-function viewMedia(url, sha, name, path) {
-    const modal = document.getElementById('media-modal');
-    const content = document.getElementById('modal-content');
-    modal.classList.remove('hidden');
-    
-    const isV = url.endsWith('.mp4');
-    content.innerHTML = isV ? `<video src="${url}" controls autoplay class="rounded-xl"></video>` : `<img src="${url}" class="rounded-xl shadow-2xl">`;
-    
-    // বাটন অ্যাকশন
-    document.getElementById('save-btn').onclick = () => {
-        const a = document.createElement('a'); a.href = url; a.download = name; a.click();
-    };
-    
-    document.getElementById('trash-btn').onclick = () => {
-        Swal.fire({
-            title: 'Move to Trash?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes'
-        }).then((result) => {
-            if (result.isConfirmed) moveToTrash(path, sha, name);
-        });
-    };
+async function loadGallery() {
+    const box = document.getElementById('gallery'), carousel = document.getElementById('carousel-3d');
+    const em = localStorage.getItem('em'), tk = localStorage.getItem('tk');
+    if(!tk || !em) return;
+
+    box.innerHTML = '<div class="col-span-full py-20 text-center opacity-10 animate-pulse text-[9px] tracking-[0.5em]">SYNCING...</div>';
+
+    const url = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/vault/${em}/${currentTab}`;
+
+    try {
+        const res = await fetch(url, { headers: { 'Authorization': `token ${tk}` } });
+        if (res.ok) {
+            const data = await res.json();
+            const items = data.reverse();
+            
+            // 3D Carousel (Last 6 Photos)
+            carousel.innerHTML = '';
+            const photos = items.filter(f => f.name.match(/\.(jpg|jpeg|png|webp)$/i)).slice(0, 6);
+            photos.forEach((f, i) => {
+                carousel.innerHTML += `<img src="${f.download_url}" style="--i:${i+1}" class="carousel-item">`;
+            });
+
+            // Grid Load
+            box.innerHTML = '';
+            items.forEach(f => {
+                const isV = f.name.match(/\.(mp4|mov|webm)$/i);
+                box.innerHTML += `
+                    <div class="media-item border border-white/5" onclick="viewMedia('${f.download_url}', ${!!isV})">
+                        ${isV ? `<video src="${f.download_url}" class="w-full h-full object-cover"></video>` : `<img src="${f.download_url}" class="w-full h-full object-cover" loading="lazy">`}
+                    </div>`;
+            });
+        } else {
+            box.innerHTML = `<p class="col-span-full text-center py-20 opacity-20 text-[9px] uppercase tracking-widest">No Items</p>`;
+        }
+    } catch (e) { console.error(e); }
 }
+
+async function handleUpload(input) {
+    const files = Array.from(input.files), tk = localStorage.getItem('tk'), em = localStorage.getItem('em');
+    if(!files.length) return;
+    Swal.fire({ title: 'Uploading...', didOpen: () => Swal.showLoading(), background: '#0b0b1a', color: '#fff' });
+
+    for(let file of files) {
+        const b64 = await new Promise(r => {
+            const reader = new FileReader();
+            reader.onload = () => r(reader.result.split(',')[1]);
+            reader.readAsDataURL(file);
+        });
+        const folder = file.type.startsWith('video') ? 'videos' : 'photos';
+        const name = `${Date.now()}_${file.name.replace(/\s/g, '_')}`;
+        await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}/contents/vault/${em}/${folder}/${name}`, {
+            method: 'PUT',
+            headers: { 'Authorization': `token ${tk}` },
+            body: JSON.stringify({ message: "upload", content: b64 })
+        });
+    }
+    Swal.fire('Success', 'File Saved', 'success').then(() => loadGallery());
+}
+
+function switchTab(t) {
+    currentTab = t;
+    document.querySelectorAll('.nav-tab').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(`tab-${t}`).classList.add('active');
+    loadGallery();
+}
+
+function viewMedia(url, isV) {
+    Swal.fire({
+        html: isV ? `<video src="${url}" controls autoplay class="w-full rounded-xl"></video>` : `<img src="${url}" class="w-full rounded-xl">`,
+        showConfirmButton: false, background: '#0b0b1a', width: '95%'
+    });
+}
+
+function logout() { localStorage.clear(); location.reload(); }
+
+window.onload = () => {
+    if(localStorage.getItem('tk')) {
+        document.getElementById('auth-box').classList.add('hidden');
+        document.getElementById('dash').classList.remove('hidden');
+        document.getElementById('upload-fab').classList.remove('hidden');
+        loadGallery();
+    }
+};
