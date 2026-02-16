@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIYAM VAULT PRO</title>
+    <title>SIYAM VAULT PRO - V3</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -12,72 +12,52 @@
 </head>
 <body class="bg-[#0b0b1a] text-white overflow-x-hidden">
 
-    <div class="fixed inset-0 z-0 bg-gradient-to-b from-[#0b0b1a] via-[#1a0b2e] to-[#050505]">
-        <div id="stars"></div>
-    </div>
+    <div class="fixed inset-0 z-0 bg-gradient-to-b from-[#0b0b1a] via-[#1a0b2e] to-[#050505]"><div id="stars"></div></div>
 
     <div id="auth-box" class="relative z-50 flex items-center justify-center min-h-screen p-6">
         <div class="glass-card w-full max-w-sm p-10 rounded-[40px] border border-white/10 text-center shadow-2xl">
-            <h1 class="text-4xl font-black mb-1 italic tracking-tighter">SIYAM <span class="text-purple-500">VAULT</span></h1>
-            <p class="text-purple-300 text-[10px] mb-10 uppercase tracking-[0.2em]">Secure Cloud Storage</p>
+            <h1 class="text-4xl font-black mb-1 italic tracking-tighter live-text">SIYAM <span class="text-purple-500">VAULT</span></h1>
+            <p class="text-purple-300 text-[10px] mb-10 uppercase tracking-[0.2em] live-text">Next-Gen Storage</p>
             
             <div class="space-y-5">
-                <div class="relative group">
-                    <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-purple-400/50"></i>
-                    <input type="email" id="u-email" placeholder="Gmail Address" class="glass-input">
-                </div>
-                <div class="relative group">
-                    <i class="fa-solid fa-key absolute left-4 top-1/2 -translate-y-1/2 text-purple-400/50"></i>
-                    <input type="password" id="u-token" placeholder="GitHub Token" class="glass-input">
-                </div>
-                <button onclick="handleLogin()" class="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-black rounded-2xl uppercase text-[11px] tracking-widest shadow-lg shadow-purple-500/20 active:scale-95 transition-all mt-4">Unlock System</button>
+                <input type="email" id="u-email" placeholder="Gmail Address" class="glass-input">
+                <input type="password" id="u-token" placeholder="GitHub Token" class="glass-input">
+                <button id="login-btn" onclick="handleLogin()" class="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-black rounded-2xl uppercase text-[11px] tracking-widest shadow-lg shadow-purple-500/20 active:scale-95 transition-all mt-4">Unlock System</button>
             </div>
         </div>
     </div>
 
     <div id="dash" class="hidden relative z-10">
         <header class="flex justify-between items-center px-6 py-4 border-b border-white/5 bg-[#0b0b1a]/80 backdrop-blur-xl sticky top-0 z-[100]">
-            <h2 class="text-lg font-black italic tracking-tighter text-purple-500">DASHBOARD</h2>
+            <h2 class="text-lg font-black italic tracking-tighter text-purple-500 live-text">DASHBOARD</h2>
             <button onclick="logout()" class="text-[9px] font-bold border border-red-500/40 text-red-400 px-4 py-2 rounded-full uppercase bg-red-500/5 hover:bg-red-500/20 transition-all">Logout</button>
         </header>
 
-        <div id="three-container" class="w-full h-[350px] relative border-b border-white/5 overflow-hidden"></div>
+        <div id="three-container" class="w-full h-[350px] relative border-b border-white/5"></div>
 
         <div class="sticky top-[68px] z-[90] bg-[#0b0b1a]/95 backdrop-blur-2xl border-b border-white/5">
             <div class="flex justify-center gap-10 py-5">
                 <button onclick="switchTab('photos')" id="tab-photos" class="nav-tab active">
-                    <span class="tab-text">PHOTOS</span><div class="glow-dot"></div>
+                    <span class="tab-text live-text">PHOTOS</span><div class="glow-dot"></div>
                 </button>
                 <button onclick="switchTab('videos')" id="tab-videos" class="nav-tab">
-                    <span class="tab-text">VIDEOS</span><div class="glow-dot"></div>
+                    <span class="tab-text live-text">VIDEOS</span><div class="glow-dot"></div>
                 </button>
                 <button onclick="switchTab('folders')" id="tab-folders" class="nav-tab">
-                    <span class="tab-text">FOLDERS</span><div class="glow-dot"></div>
+                    <span class="tab-text live-text">FOLDERS</span><div class="glow-dot"></div>
                 </button>
             </div>
-            <div id="folder-action-bar" class="hidden flex justify-center pb-4 animate-fade-in">
-                <button onclick="createNewFolder()" class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-6 py-2 rounded-full text-[10px] font-black tracking-widest uppercase">
-                    <i class="fa-solid fa-folder-plus mr-2"></i> Create Folder
-                </button>
+            <div id="folder-action-bar" class="hidden flex justify-center gap-4 pb-4 animate-fade-in">
+                <button onclick="createNewFolder()" class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-6 py-2 rounded-full text-[10px] font-black tracking-widest uppercase live-text">NEW FOLDER</button>
+                <button id="move-btn" onclick="startMoveProcess()" class="hidden bg-blue-500/10 text-blue-400 border border-blue-500/20 px-6 py-2 rounded-full text-[10px] font-black tracking-widest uppercase live-text">MOVE SELECTED</button>
             </div>
         </div>
 
         <div id="gallery" class="grid grid-cols-2 md:grid-cols-4 gap-1 p-1 pb-40 min-h-screen"></div>
     </div>
 
-    <div id="media-modal" class="hidden fixed inset-0 z-[300] bg-black/98 backdrop-blur-xl flex flex-col items-center justify-center p-4">
-        <button onclick="closeModal()" class="fixed top-6 right-6 z-[310] text-red-600 bg-white/10 w-12 h-12 rounded-full flex items-center justify-center border border-red-600/30">
-            <i class="fa-solid fa-xmark text-3xl font-black"></i>
-        </button>
-        <div id="modal-content" class="w-full max-w-4xl max-h-[80vh] rounded-3xl overflow-hidden shadow-2xl transition-all duration-500 scale-95"></div>
-        <div class="flex gap-6 mt-10">
-            <button id="dl-btn" class="action-btn text-emerald-400"><i class="fa-solid fa-download"></i> SAVE</button>
-            <button id="del-btn" class="action-btn text-red-500"><i class="fa-solid fa-trash"></i> DELETE</button>
-        </div>
-    </div>
-
     <label id="upload-fab" class="hidden fixed bottom-8 right-8 w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center cursor-pointer shadow-2xl z-[200] border border-white/20 active:scale-90 transition-all">
-        <i class="fa-solid fa-plus text-2xl text-white"></i>
+        <i class="fa-solid fa-cloud-arrow-up text-2xl text-white"></i>
         <input type="file" id="file-input" class="hidden" multiple onchange="handleUpload(this)">
     </label>
 
