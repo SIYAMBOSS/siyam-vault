@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Siyam Vault</title>
+    <title>Siyam Vault - Premium Gallery</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
@@ -11,29 +11,35 @@
 
     <div id="login-screen">
         <div class="login-card">
+            <div class="logo">🔐</div>
             <h1>Welcome Back</h1>
-            <p class="subtitle">Sign in to continue</p>
+            <p class="subtitle">Sign in to Siyam Vault</p>
             <input type="email" id="email" placeholder="sadaf245sz@gmail.com">
-            <input type="password" id="token" placeholder="GitHub Token">
+            <input type="password" id="token" placeholder="Enter GitHub Token">
             <button class="login-btn" onclick="login()">LOGIN</button>
+            <p class="footer-link">Don't have access? <span>Sign Up</span></p>
         </div>
     </div>
 
     <div id="gallery-container" class="hidden">
-        <div class="top-nav">
-            <span class="search-icon">🔍</span>
-            <div class="tabs">
-                <span class="active">Photos</span>
-                <span>Albums</span>
+        <header class="app-header">
+            <div class="nav-top">
+                <span class="icon">🔍</span>
+                <div class="tabs">
+                    <span class="tab-item active" onclick="switchTab('photos')">PHOTOS</span>
+                    <span class="tab-item" onclick="switchTab('videos')">VIDEOS</span>
+                    <span class="tab-item" onclick="switchTab('folders')">FOLDERS</span>
+                </div>
+                <span class="icon" onclick="logout()">⋮</span>
             </div>
-            <span class="menu-icon" onclick="logout()">⋮</span>
+        </header>
+
+        <div class="slider-container">
+            <div id="carousel" class="carousel">
+                </div>
         </div>
 
-        <div class="stats-bar">
-            <span id="file-count">Loading...</span>
-        </div>
-
-        <div class="date-header">Yesterday</div>
+        <div class="section-title">Yesterday</div>
 
         <div id="media-grid" class="grid">
             </div>
@@ -46,9 +52,9 @@
         <div class="modal-overlay" onclick="closeModal()"></div>
         <div class="modal-body">
             <div id="modal-content"></div>
-            <div class="modal-footer">
+            <div class="modal-actions">
                 <a id="download-btn" download>Download</a>
-                <span onclick="closeModal()" style="color: white; cursor: pointer;">Close</span>
+                <button class="del-btn" onclick="deleteFile()">Delete</button>
             </div>
         </div>
     </div>
